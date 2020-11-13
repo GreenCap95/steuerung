@@ -18,23 +18,25 @@ unsigned long lastMillis;
 void setup() 
   {
     Serial.begin(9600);
+    // set up pinModes and initial values
+    // TODO ersetze Zahlen durch Variablen
     pinMode(2, INPUT);
     pinMode(3, INPUT);
     pinMode(4, INPUT);
     pinMode(5, INPUT);
     pinMode(7, OUTPUT);
     pinMode(6, OUTPUT);
-  pinMode(8, OUTPUT);
-  pinMode(13, OUTPUT);
-  pinMode(Piep, OUTPUT);
-  digitalWrite(6,HIGH);
-  digitalWrite(7,HIGH);
-  digitalWrite(8,HIGH);
-  StatAuf=LOW;
-  StatZu=LOW;
-  SchAuf=LOW;
-  SchZu=LOW; 
-  lastMillis=millis();
+    pinMode(8, OUTPUT);
+    pinMode(13, OUTPUT);
+    pinMode(Piep, OUTPUT);
+    digitalWrite(6,HIGH);
+    digitalWrite(7,HIGH);
+    digitalWrite(8,HIGH);
+    StatAuf=LOW;
+    StatZu=LOW;
+    SchAuf=LOW;
+    SchZu=LOW; 
+    lastMillis=millis();
 
 
   } 
@@ -44,11 +46,11 @@ void loop()
     // Tasterstatus pruefen
 
     StatZu=digitalRead(2);
-  StatAuf=digitalRead(3);
-  
-  SchAuf=digitalRead(5);
-  
-  SchZu=digitalRead(4);
+    StatAuf=digitalRead(3);
+    
+    SchAuf=digitalRead(5);
+    
+    SchZu=digitalRead(4);
   
   
   //Warnton
