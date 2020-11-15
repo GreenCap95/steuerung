@@ -114,12 +114,12 @@ bool button_close_pressed=false;
 bool button_open_pressed=false;
 bool door_is_closing=false;
 bool door_is_opening=false;
-bool door_open=false;
-bool door_closed=false;
+bool door_is_open=false;
+bool door_is_closed=false;
 
-unsigned long millis_last;
+unsigned long last_millis;
 int cycles_to_perform=2;
-int cycle_counter;
+int cycle_counter=0;
 
 void open_door(){
     open_supply_valve();
@@ -157,8 +157,8 @@ void route_air_close(){
 void setup(){
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
-    pinMode(switch_open, INPUT);
-    pinMode(switch_closed, INPUT);
+    pinMode(switch_door_open, INPUT);
+    pinMode(switch_door_closed, INPUT);
     pinMode(valve_close_door, OUTPUT);
     pinMode(valve_open_door, OUTPUT);
     pinMode(valve_supply, OUTPUT);
@@ -167,18 +167,54 @@ void setup(){
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
 
-    millis_last=millis();
+    last_millis=millis();
+
+    // main loop
+    while (cycle_counter<cycles_to_perform)
+    {
+        // update process variables
+        button_close_pressed=(button_close==HIGH);
+        button_open_pressed=(button_open==HIGH);
+        door_is_closed=(switch_door_closed==HIGH);
+        door_is_open=(switch_door_open==HIGH);
+
+        if (door_is_closing or door_is_opening or door_is_open)
+        {
+            // while the door is not closed yet again the data for the current
+            // cycle is accumulated
+            if ((millis()-last_millis)>200)
+            {
+                // TODO: update pressure and acceleration value lists for this
+                // cycle
+            }
+
+            if (door_is_closed)
+            {
+                close_supply_valve();
+                door_is_closing=false;
+                cycle_counter++;
+                if ((millis()-last_millis)>500)
+                {
+                    // call: sendatapoint()
+                    open_door();
+                }
+            }
+            
+            if (door_is_open))
+            {
+                close_supply_valve();
+                door_is_opening=false;
+                if ((millis()-last_millis)>500)
+                {
+                    close_door();
+                }
+            }
+        }
+    }
 }
 
 void loop(){
-    if cycle_counter<cycles_to_perform{
-        // update process variables
-        button_close_pressed=(button_close==HIGH)
-        button_open_pressed=(button_open==HIGH)
-        door_is_closed=(switch_door_closed==HIGH)
-        door_is_open=(switch_door_open==HIGH)
-    }
-    else{
-        // TODO: stop programm
-    }
+    // this loop does nothing except holding the arduino idle after the
+    // experiment has been completed. In order to rerun the experiment
+    // the arduino needs to be reset.
 }
