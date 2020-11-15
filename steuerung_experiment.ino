@@ -102,20 +102,24 @@ function loop
 // assign pin numbers
 int button_close=2;
 int button_open=3;
-int switch_closed=5;
-int switch_open=4;
+int switch_door_closed=5;
+int switch_door_open=4;
 int valve_close_door=7;
 int valve_open_door=8;
 int valve_supply=6;
 int piep=11;
 
 // define process variables
-int button_close_pressed=false;
-int button_open_pressed=false;
-int door_is_closing=false;
-int door_is_opening=false;
+bool button_close_pressed=false;
+bool button_open_pressed=false;
+bool door_is_closing=false;
+bool door_is_opening=false;
+bool door_open=false;
+bool door_closed=false;
+
 unsigned long millis_last;
 int cycles_to_perform=2;
+int cycle_counter;
 
 void open_door(){
     open_supply_valve();
@@ -164,4 +168,17 @@ void setup(){
     digitalWrite(8,HIGH);
 
     millis_last=millis();
+}
+
+void loop(){
+    if cycle_counter<cycles_to_perform{
+        // update process variables
+        button_close_pressed=(button_close==HIGH)
+        button_open_pressed=(button_open==HIGH)
+        door_is_closed=(switch_door_closed==HIGH)
+        door_is_open=(switch_door_open==HIGH)
+    }
+    else{
+        // TODO: stop programm
+    }
 }
