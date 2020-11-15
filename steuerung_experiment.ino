@@ -215,6 +215,6 @@ void setup(){
 
 void loop(){
     // this loop does nothing except holding the arduino idle after the
-    // experiment has been completed. In order to rerun the experiment
+    // experiment is completed. In order to rerun the experiment
     // the arduino needs to be reset.
 }
