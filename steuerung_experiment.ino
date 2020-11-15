@@ -86,3 +86,59 @@ function loop
     else
         terminate program
 */
+
+// assign pin numbers
+int button_close=2;
+int button_open=3;
+int switch_closed=5;
+int switch_open=4;
+int valve_close_door=7;
+int valve_open_door=8;
+int valve_supply=6
+
+// define process variables
+int button_close_pressed;
+int button_open_pressed;
+int door_is_closing;
+int door_is_opening;
+unsigned long millis_last;
+int cycles_to_perform=2;
+
+void close_door(){
+    open_supply_valve();
+    digitalWrite(valve_supply,LOW) // supply valve opens
+    digitalWrite(valve_close_door,LOW) // route air to close door
+}
+
+void open_door(){
+    open_supply_valve();
+    route_air_open();
+    door_is_opening=true;
+}
+
+void close_door(){
+    open_supply_valve();
+    route_air_close();
+    door_is_closing=true;
+}
+
+void send_datapoint(){
+    return;
+}
+
+// Functions to controll valves
+void open_supply_valve(){
+    digitalWrite(valve_supply,LOW);
+}
+
+void close_supply_valve(){
+    digitalWrite(valve_supply,HIGH);
+}
+
+void route_air_open(){
+    digitalWrite(valve_open_door,LOW);
+}
+
+void route_air_close(){
+    digitalWrite(valve_close_door,LOW)
+}
