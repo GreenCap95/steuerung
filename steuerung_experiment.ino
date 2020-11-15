@@ -110,10 +110,10 @@ int valve_supply=6;
 int piep=11;
 
 // define process variables
-int button_close_pressed;
-int button_open_pressed;
-int door_is_closing;
-int door_is_opening;
+int button_close_pressed=false;
+int button_open_pressed=false;
+int door_is_closing=false;
+int door_is_opening=false;
 unsigned long millis_last;
 int cycles_to_perform=2;
 
