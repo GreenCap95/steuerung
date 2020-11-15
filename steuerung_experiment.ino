@@ -18,15 +18,15 @@ set cycles to wanted amount
 function close_door
     pass in: nothing
     call: open_supply_valve()
-    set value of pin signal to route air flow to close door
+    call: route_air_close()
     set door is closing flag to True
     return: nothing
 endfunction
 
 function open_door
     pass in: nothing
-    set value of pin signal to open supply value
-    set value of pin signal to route air flow to open door
+    call: open_supply_valve()
+    call: route_air_open()
     set door is opening flag to True
     return: nothing
 endfunction
@@ -56,6 +56,18 @@ function setup
     define pinmodes for each used pin as input or output
     set button and switch statuses to LOW
     set last millis to current time
+endfunction
+
+function route_air_open
+    pass in: nothing
+    set pin to route air to open the door
+    return: nothing
+endfunction
+
+function route_air_close
+    pass in: nothing
+    set pin to route air to close the door
+    return: nothing
 endfunction
 
 function loop
@@ -103,12 +115,6 @@ int door_is_closing;
 int door_is_opening;
 unsigned long millis_last;
 int cycles_to_perform=2;
-
-void close_door(){
-    open_supply_valve();
-    digitalWrite(valve_supply,LOW) // supply valve opens
-    digitalWrite(valve_close_door,LOW) // route air to close door
-}
 
 void open_door(){
     open_supply_valve();
