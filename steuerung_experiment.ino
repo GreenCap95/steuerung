@@ -106,7 +106,8 @@ int switch_closed=5;
 int switch_open=4;
 int valve_close_door=7;
 int valve_open_door=8;
-int valve_supply=6
+int valve_supply=6;
+int piep=11;
 
 // define process variables
 int button_close_pressed;
@@ -147,4 +148,20 @@ void route_air_open(){
 
 void route_air_close(){
     digitalWrite(valve_close_door,LOW)
+}
+
+void setup(){
+    pinMode(button_close, INPUT);
+    pinMode(button_open, INPUT);
+    pinMode(switch_open, INPUT);
+    pinMode(switch_closed, INPUT);
+    pinMode(valve_close_door, OUTPUT);
+    pinMode(valve_open_door, OUTPUT);
+    pinMode(valve_supply, OUTPUT);
+    pinMode(Piep, OUTPUT);
+    digitalWrite(6,HIGH);
+    digitalWrite(7,HIGH);
+    digitalWrite(8,HIGH);
+
+    millis_last=millis();
 }
