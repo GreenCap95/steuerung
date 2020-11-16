@@ -167,7 +167,8 @@ void route_air_close(){
     digitalWrite(valve_close_door,LOW)
 }
 
-void setup(){
+void setup()
+{
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
     pinMode(switch_door_open, INPUT);
@@ -226,7 +227,8 @@ void setup(){
     }
 }
 
-void loop(){
+void loop()
+{
     // this loop does nothing except holding the arduino idle after the
     // experiment is completed. In order to rerun the experiment
     // the arduino needs to be reset.
