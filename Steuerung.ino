@@ -13,8 +13,6 @@ const int Piep=11;        // Warnton
 unsigned long lastMillis;
 
 
-
-
 void setup() 
   {
     Serial.begin(9600);
