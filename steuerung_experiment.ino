@@ -213,7 +213,7 @@ void setup(){
                 }
             }
             
-            if (door_is_open))
+            if (door_is_open)
             {
                 close_supply_valve();
                 door_is_opening=false;
