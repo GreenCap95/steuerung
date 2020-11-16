@@ -136,7 +136,17 @@ void close_door(){
     door_is_closing=true;
 }
 
-void send_datapoint(){
+void send_datapoint(float pressure_values[],float acce_x[],float acce_y[],
+float acce_z[], int duration){
+    // declare amount of datapoints to use of each array. Reach beyond cycle end
+    int n_points=500; // ADJUST AS NEEDED!!!
+    // send each values of all measurements one by one
+    // send pressure values
+    Serial.write(pressure_values, n_points);
+    Serial.write(acce_x,n_points);
+    Serial.write(acce_y,n_points);
+    Serial.write(acce_z,n_points);
+    Serial.write(duration);
     return;
 }
 
