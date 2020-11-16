@@ -123,6 +123,7 @@ unsigned long last_millis;
 int cycles_to_perform=2;
 int cycle_counter=0;
 
+// Funcitons to controll door movement
 void open_door(){
     open_supply_valve();
     route_air_open();
