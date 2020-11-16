@@ -32,10 +32,12 @@ function open_door
 endfunction
 
 function send_datapoint
-    pass in: noting
-    write pressure values of last cycle as serial output
-    write acceleration values of last cycle as serial output                    
-    write duration of last cycle as serival output
+    pass in: pressure data (array), acceleration data (array for x,y,z respekti)
+    send pressure data array via serial connection
+    send acceleration x data via serial
+    send acceleration y data via serial
+    send acceleration z data via serial
+    send time duration of cycle
     return: nothing
 endfunction
 
