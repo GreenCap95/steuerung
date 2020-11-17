@@ -29,6 +29,17 @@ function send_datapoint
     return: nothing
 endfunction
 
+function setup_lsm6ds33
+    pass in: nothing
+    if acitvation of i2c connection fails
+        print hint to serial output
+        enter infinit loop
+    set acceleration range to ??
+    set gyro range to ??
+    set acceleration data rate to ?? Hz
+    set gyro data rate to ?? Hz
+endfunction
+
 function open_supply_valve
     pass in: nothing
     set value of pin signal to open supply valve
