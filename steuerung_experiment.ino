@@ -138,4 +138,5 @@ void loop()
     // this loop does nothing except holding the arduino idle after the
     // experiment is completed. In order to rerun the experiment
     // the arduino needs to be reset.
+    delay(1000);
 }
