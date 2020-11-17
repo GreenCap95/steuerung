@@ -7,6 +7,9 @@
 // - Drucksensorwerte auslesen
 // - B-Sensorwerte auslesen
 
+// load libaries
+#include <Adafruit_LSM6DS33.h>
+
 // assign pin numbers
 int button_close=2;
 int button_open=3;
@@ -16,6 +19,9 @@ int valve_close_door=7;
 int valve_open_door=8;
 int valve_supply=6;
 int piep=11;
+
+// define sensor objects
+Ada
 
 // define process variables
 bool button_close_pressed=false;
@@ -72,7 +78,7 @@ void route_air_open(){
 void route_air_close(){
     digitalWrite(valve_close_door,LOW)
 }
-
+//==============================================================================
 void setup()
 {
     // setup pinmodes
@@ -87,7 +93,7 @@ void setup()
     digitalWrite(6,HIGH);
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
-
+    
     last_millis=millis();
 
     // *****main loop*****
@@ -107,6 +113,11 @@ void setup()
             {
                 // TODO: update pressure and acceleration value lists for this
                 // cycle
+                // read accelerometer
+                sensors_event_t accel;
+                sensors_event_t gyro;
+                sensors_event_t temp;
+                lsm6ds33.getEvent(&accel, &gyro, &temp);
             }
 
             if (door_is_closed)
