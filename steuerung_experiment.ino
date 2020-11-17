@@ -75,6 +75,7 @@ void route_air_close(){
 
 void setup()
 {
+    // setup pinmodes
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
     pinMode(switch_door_open, INPUT);
@@ -89,7 +90,7 @@ void setup()
 
     last_millis=millis();
 
-    // main loop
+    // *****main loop*****
     while (cycle_counter<cycles_to_perform)
     {
         // update process variables
