@@ -36,6 +36,15 @@ unsigned long last_millis;
 int cycles_to_perform=2;
 int cycle_counter=0;
 
+// define containers for sensor values
+list<float> cycle_accel_x;
+list<float> cycle_accel_y;
+list<float> cycle_accel_z;
+list<float> cycle_gyro_x;
+list<float> cycle_gyro_y;
+list<float> cycle_gyro_z;
+list<float> cycle_presure;
+
 // Funcitons to controll door movement
 void open_door(){
     open_supply_valve();
@@ -73,9 +82,9 @@ map read_lsm6ds33()
         {"accel_x",accel.acceleration.x},
         {"accel_y",accel.acceleration.y},
         {"accel_z",accel.acceleration.z},
-        {"gyro_x",accel.gyro.x},
-        {"gyro_y",accel.gyro.y},
-        {"gyro_z",accel.gyro.z},
+        {"gyro_x",gyro.gyro.x},
+        {"gyro_y",gyro.gyro.y},
+        {"gyro_z",gyro.gyro.z},
     };
     return lsm6ds33_values;
 }
@@ -132,11 +141,16 @@ void setup()
             {
                 // TODO: update pressure and acceleration value lists for this
                 // cycle
-                // read accelerometer
-                sensors_event_t accel;
-                sensors_event_t gyro;
-                sensors_event_t temp;
-                lsm6ds33.getEvent(&accel, &gyro, &temp);
+                // read current accelerometer values
+                lsm6ds33_values=read_lsm6ds33();
+                // fill value list for current datapoint/cycle
+                cycle_accel_x.push_back(lsm6ds33_values["accel_x"]);
+                cycle_accel_y.push_back(lsm6ds33_values["accel_y"]);
+                cycle_accel_z.push_back(lsm6ds33_values["accel_z"]);
+                cycle_gyro_x.push_back(lsm6ds33_values["gyro_x"]);
+                cycle_gyro_y.push_back(lsm6ds33_values["gyro_y"]);
+                cycle_gyro_z.push_back(lsm6ds33_values["gyro_z"]);
+                // add temperature?
             }
 
             if (door_is_closed)
