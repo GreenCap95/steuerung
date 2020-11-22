@@ -28,7 +28,8 @@ Wenn das Signal übermittelt wird, dass ein Zyklus beendet wurde, werden die Dat
 """
 function read_values
     pass in: nothing
-    while values are available
+    while not all values have been send
+        assign read line from serial input to variable
         put values at the end of a list
     return: list of values [p,ax,ay,az,gx,gy,gz,(t)]
 endfunction
