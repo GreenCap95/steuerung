@@ -49,9 +49,14 @@ function collect_values()
         assign time value to variable
     return: nothing
 endfunction
-""
+"""
 
 """ 
 function add_datapoint()
     pass in: list of values (including duration)
+    setzt alle Listen mit Sensorwerten und die Zeitdauer zu einer Liste zusammen (in der richtigen Reihenfolge)
+    setze alle Werte zu einem String zusammen und trenne sie dabei je weils durch ein Komma
+    füge an Ende des Strings einen Zeilen umbruch ein
+    hänge strings als neue zeile an die csv Datei an
+    return: nothing
 """
