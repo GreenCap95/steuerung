@@ -9,6 +9,7 @@
 
 // load libaries
 #include <Adafruit_LSM6DS33.h>
+#include <map>
 
 // assign pin numbers
 int button_close=2;
@@ -21,7 +22,7 @@ int valve_supply=6;
 int piep=11;
 
 // define sensor objects
-Ada
+Adafruit_LSM6DS33 lsm6ds33;
 
 // define process variables
 bool button_close_pressed=false;
@@ -60,6 +61,23 @@ float acce_z[], int duration){
     Serial.write(acce_z,n_points);
     Serial.write(duration);
     return;
+}
+
+map read_lsm6ds33()
+{
+    sensors_event_t accel;
+    sensors_event_t gyro;
+    senosrs_event_t temp;
+    lsm6ds33.getEvent(&accel, &gyro, &temp);
+    map <char, float> lsm6ds33_values={
+        {"accel_x",accel.acceleration.x},
+        {"accel_y",accel.acceleration.y},
+        {"accel_z",accel.acceleration.z},
+        {"gyro_x",accel.gyro.x},
+        {"gyro_y",accel.gyro.y},
+        {"gyro_z",accel.gyro.z},
+    };
+    return lsm6ds33_values;
 }
 
 // Functions to controll valves
