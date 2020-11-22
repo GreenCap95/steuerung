@@ -40,6 +40,21 @@ function setup_lsm6ds33
     set gyro data rate to ?? Hz
 endfunction
 
+function read_lsm6ds33
+    pass in: nothing
+    create acceleration event
+    create gyro event
+    create temperature event
+    call lsm6ds33.getEvent on event objects by reference to fill events with current values
+    write x acceleration value to dict
+    write y acceleration value to dict
+    write z acceleration value to dict
+    write x gyro value to dict
+    write y gyro value to dict
+    write z gyro value to dict
+    return: dict with keys: valuenames values: sensorvalues
+endfunction
+
 function open_supply_valve
     pass in: nothing
     set value of pin signal to open supply valve
@@ -71,7 +86,7 @@ function route_air_close
     return: nothing
 endfunction
 
-function loop
+function setup
     pass in: nothing
     if cycle counter is less than cycles wanted
         update switch statuses
@@ -79,8 +94,9 @@ function loop
         if door is closing or if door is opening of if door is open
             // dataloging cycle ends when door is closed again
             if it has been 0.2 sec since last measurement
+                call: read_lsm6ds33() and assign returned dict to variable
                 update list of pressure values
-                update liste of acceleration values
+                update liste of acceleration values with new measurements
         
         if door is closed
             call: shut_supply_valve()
