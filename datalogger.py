@@ -31,7 +31,27 @@ function read_values
     while values are available
         put values at the end of a list
     return: list of values [p,ax,ay,az,gx,gy,gz,(t)]
+endfunction
 """
 
+""" 
+function collect_values()
+    pass in: nothing
+    append pressure value to list of pressure values
+    append accel x value to  list of accel x values
+    append accel y value to  list of accel y values   
+    append accel z value to  list of accel z values
+    append gyro x value to list of gyro x values
+    append gyro y value to list of gyro y values
+    append gyro z value to list of gyro z values
+    
+    if time value is available
+        assign time value to variable
+    return: nothing
+endfunction
+""
 
-# lies 
+""" 
+function add_datapoint()
+    pass in: list of values (including duration)
+"""
