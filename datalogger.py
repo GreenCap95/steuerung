@@ -1,29 +1,39 @@
 """
-This script run reads serial input from arduino and logs it into an csv file.
+======= What? =======
+- This script reads serial input from arduino and logs it into an csv file.
 
-solange ein input kommt sollten datenpunkte in die csv Datei geschrieben werden
-stell
-
-input:
-jedes Mal nachdem Sensorwerte aufgenommen wurden, werden sie direkt an Pi gesendet. (1xDruck, 3xBeschleunigung, 3xRot.-Gesch.)
+- The input comes in regular intervalls. jedes Mal nachdem Sensorwerte aufgenommen wurden, werden sie direkt an Pi gesendet. (1xDruck, 3xBeschleunigung, 3xRot.-Gesch.)
 Wenn ein Zyklus beendet wurde wird zusätzlich die Dauer des Zykluses übermittelt.
 
-Solange ein Zyklus noch nicht beendet wurde werden die zusammen gehörigen Werte in einzelnen Listen gesammelt. Die Werte werden in einer festgelegten Reihenfolge übertragen:
-1. Druck
-2. Beschl. x
-3. Beschl. y
-4. Beschl. z
-5. Rotgesch. x
-6. Rotgesch. y
-7. Rotgesch. z
-8. Dauer
+- input werte werden einzelnt der Reihe nach übermittelt
 
-Werden die Werte in dieser Reihenfolge verschickt, können sie in der gleichen REihenfolge wieder ausgelesen werden. (Denke ich zumindest)
+- inputs werden in Listen bzw. Variable für die Zeitdauer für jeden Datenpunt gesammelt
 
-Wenn das Signal übermittelt wird, dass ein Zyklus beendet wurde, werden die Daten in der richtigen Reihenfolge in eine neue Zeile in der csv Datei geschrieben.
+- eine zu beginn initierte csv Datei liegt im selben Verzeichnis wie dieses Skript
 
+- immer wenn eine definierte Anzahl an Werten je Messwert vorhanden ist, wird eine neue Zeile/Datenpunkt in die csv-Datei geschrieben. Die Variablen werden anschließend geleert.
 
+- Die Werte werden in einer festgelegten Reihenfolge übertragen:
+    1. Druck
+    2. Beschl. x
+    3. Beschl. y
+    4. Beschl. z
+    5. Rotgesch. x
+    6. Rotgesch. y
+    7. Rotgesch. z
+    8. Dauer
 
+======= How? =======
+- eine Funktion liest alle aktuellen Werte der Sensoren für einen Zeitpunkt aus und legt sie in der selben Reihenfolgen in ein einer Liste ab
+
+- eine Funktion sortiert die Werte aus der Liste der aktuellen Werte in die entsprechenden Liste von Sensorwerten für diesen Datenpunkt ein
+
+- eine Funktion schreibt alle gesammelten Werte für einen Datenpunkt aka einen Zyklus in die csv-Datei
+
+-
+
+======= Next =======
+Do it, test it, repeat.
 """
 """
 function read_values
