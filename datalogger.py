@@ -30,7 +30,7 @@ Wenn ein Zyklus beendet wurde wird zusätzlich die Dauer des Zykluses übermitte
 
 - eine Funktion schreibt alle gesammelten Werte für einen Datenpunkt aka einen Zyklus in die csv-Datei
 
--asdf
+-
 
 ======= Next =======
 Do it, test it, repeat.
