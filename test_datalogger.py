@@ -1,5 +1,9 @@
 import unittest
 from datalogger import *
 
-class TestDataLogger(unittest.TestCase):
-    def test_collect
+# für jede zu testende Funktion wird eine eigene Testklasse angelegt
+
+class TestCollectMeasurements(unittest.TestCase):
+    def test_measurements(self):
+        # test if a dict is returned
+        self.assertIsInstance(collect_mesurements)

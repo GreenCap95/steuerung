@@ -66,31 +66,7 @@ def read_values():
             break
     return values
 
-""" 
-function collect_values()
-    pass in: nothing
-    append pressure value to list of pressure values
-    append accel x value to  list of accel x values
-    append accel y value to  list of accel y values   
-    append accel z value to  list of accel z values
-    append gyro x value to list of gyro x values
-    append gyro y value to list of gyro y values
-    append gyro z value to list of gyro z values
-    
-    if time value is available
-        assign time value to variable
-    return: nothing
-endfunction
-"""
-def collect_mesurements(values,measurements):
-    """This function takes values read from the serial input and stores them in lists of corresponding measurements. returns dict with lists of sensor values
-    The order of measurements in "values" need to be rigid
-    Parameters:
-    values=[p,ax,ay,az,gx,gy,gz]
-    measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}"""
-    for key in measurements.keys():
-        measurements[key].append(values.pop(index=0))
-    return measurements
+
 
 """ 
 function add_datapoint()
@@ -127,5 +103,10 @@ measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
 while True:
     # wait for arduino to transfer all values
     read_values()
-    collect_mesurements()
+
+    # collect measurements for current datapoint
+    for key in measurements.keys():
+        measurements[key].append(values.pop(index=0))
+
+
     add_datapoint()
