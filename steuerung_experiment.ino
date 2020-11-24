@@ -58,16 +58,15 @@ void close_door(){
     door_is_closing=true;
 }
 
-void send_datapoint(float pressure_values[],float acce_x[],float acce_y[],
+void send_sensor_values(float pressure_values[],float acce_x[],float acce_y[],
 float acce_z[], float gyro_x[], float gyro_y[], float gyro_z[], int duration){
-    Serial.write(pressure_values);
-    Serial.write(acce_x);
-    Serial.write(acce_y);
-    Serial.write(acce_z);
-    Serial.write(gyro_x);
-    Serial.write(gyro_y);
-    Serial.write(gyro_z);
-    Serial.write(duration);
+    Serial.println(pressure_values);
+    Serial.println(acce_x);
+    Serial.println(acce_y);
+    Serial.println(acce_z);
+    Serial.println(gyro_x);
+    Serial.println(gyro_y);
+    Serial.println(gyro_z);
     return;
 }
 
@@ -78,12 +77,12 @@ map read_lsm6ds33()
     senosrs_event_t temp;
     lsm6ds33.getEvent(&accel, &gyro, &temp);
     map <char, float> lsm6ds33_values={
-        {"accel_x",accel.acceleration.x},
-        {"accel_y",accel.acceleration.y},
-        {"accel_z",accel.acceleration.z},
-        {"gyro_x",gyro.gyro.x},
-        {"gyro_y",gyro.gyro.y},
-        {"gyro_z",gyro.gyro.z},
+        {"ax",accel.acceleration.x},
+        {"ay",accel.acceleration.y},
+        {"az",accel.acceleration.z},
+        {"gx",gyro.gyro.x},
+        {"gy",gyro.gyro.y},
+        {"gz",gyro.gyro.z},
     };
     return lsm6ds33_values;
 }
@@ -122,6 +121,8 @@ void setup()
     digitalWrite(8,HIGH);
     
     last_millis=millis();
+    int millis_cycle_start;
+    int millis_cycle_end;
 
     // *****main loop*****
     while (cycle_counter<cycles_to_perform)
@@ -134,22 +135,13 @@ void setup()
 
         if (door_is_closing or door_is_opening or door_is_open)
         {
-            // while the door is not closed yet again the data for the current
-            // cycle is accumulated
+            // read sensors every x ms while the door is not closed again yet
             if ((millis()-last_millis)>200)
             {
-                // TODO: update pressure and acceleration value lists for this
-                // cycle
-                // read current accelerometer values
                 lsm6ds33_values=read_lsm6ds33();
-                // fill value list for current datapoint/cycle
-                cycle_accel_x.push_back(lsm6ds33_values["accel_x"]);
-                cycle_accel_y.push_back(lsm6ds33_values["accel_y"]);
-                cycle_accel_z.push_back(lsm6ds33_values["accel_z"]);
-                cycle_gyro_x.push_back(lsm6ds33_values["gyro_x"]);
-                cycle_gyro_y.push_back(lsm6ds33_values["gyro_y"]);
-                cycle_gyro_z.push_back(lsm6ds33_values["gyro_z"]);
-                // add temperature?
+                // TODO add function to read pressure sensor
+                // TODO add parameters to function below
+                send_sensor_values();
             }
 
             if (door_is_closed)
@@ -157,11 +149,9 @@ void setup()
                 close_supply_valve();
                 door_is_closing=false;
                 cycle_counter++;
-                if ((millis()-last_millis)>500)
-                {
-                    // call: sendatapoint()
-                    open_door();
-                }
+                // calc and send duration of cycle
+                Serial.println(millis_cycle_end-millis_cycle_start)
+                open_door();
             }
             
             if (door_is_open)

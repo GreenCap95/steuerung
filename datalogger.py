@@ -38,75 +38,71 @@ Do it, test it, repeat.
 #===============================================================================
 import serial
 import csv
-"""
-function read_values
-    pass in: nothing
-    while not all values have been send
-        assign read line from serial input to variable
-        put values at the end of a list
-    return: list of values [p,ax,ay,az,gx,gy,gz,(t)]
-endfunction
-"""
-def read_values():
-    """Uses a serial object to read values while data is coming in.
-    returns a list of values recieved.
-    Read input need to be floats.
-    Only recieves sensor values, not cycle time!"""
-    values=[]
-    global ser
-    # arduino needs to send seven values for every sensor reading
+#-------------------------------------------------------------------------------
+#--- set up variables ---
+values=[] # holds current sensor readings
+measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
+# TODO wähle feature_count so, dass stets genug Messpunkte aufgenommen werden
+# um auch den längsten Zyklus vollständig abzubilden
+# feature_count*time_between_sensor_reading> längste Zykluszeit
+feature_count=500 
+# TODO add serial device name for Arduino
+ser=serial.Serial('', 115200, timeout=1)
+ser.flush()
+csv_file="data.csv"
+#--------------------------------------
+
+
+
+
+
+#-------------------------------------------------------------------------------
+# set up header in csv file
+header=["id"]
+# add column header for all presure, accel and gyro values
+readings=["p","ax","ay","az","gx","gy","gz"] # values read from sensors
+for reading in readings:
+    for i in range(feature_count):
+        header.append(f"{reading}_{i}")
+header.append("t") # column holds duration of cycle
+
+# write header to csv file
+with open(csv_file,'a') as f:
+        writer=csv.writer(f,delimiter=",")
+        writer.writerow(header)
+#-------------------------------------------------------------------------------
+# MAINLOOP
+while True:
+    # wait for arduino to transfer all values for current sensor reading
     while ser.in_waiting>0:
-        value=ser.readline().decode('utf-8')
+        value=ser.read_until().decode('utf-8')
         values.append(value)
         # only read next values in line if not all values for current sensor
         # reading have been collected
         if len(values)<7:
             continue
         else:
+            # continue to store sensor values
             break
-    return values
-
-
-
-""" 
-function add_datapoint()
-    pass in: list of values (including duration)
-    setzt alle Listen mit Sensorwerten und die Zeitdauer zu einer Liste zusammen (in der richtigen Reihenfolge)
-    setze alle Werte zu einem String zusammen und trenne sie dabei je weils durch ein Komma
-    füge an Ende des Strings einen Zeilen umbruch ein
-    hänge strings als neue zeile an die csv Datei an
-    return: nothing
-"""
-def add_datapoint(csv, measurements):
-    """ Appends all measurements belonging to one datapoint into csv file.
-    csv is the path string of the csv to store values in
-    measurements is dict with lists of corresponding measuremt values"""
-
-    # prepare row. combine all lists of measurements to one list
-    row=[]
-    for key in measurements.keys():
-        row.append(measurements[key])
-
-    with open(csv,'a') as f:
-        writer=csv.writer(f)
-        writer.writerow(row)
-
-# MAINLOOP
-# TODO add serial device name for Arduino
-ser=serial.Serial('', 115200, timeout=1)
-ser.flush()
-
-measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
-
-# TODO set up csv file and create variable for it
-
-while True:
-    # wait for arduino to transfer all values
-    read_values()
 
     # collect measurements for current datapoint
     for key in measurements.keys():
         measurements[key].append(values.pop(index=0))
 
+    # check if all data for datapoint has been collected
+    if len(measurements['p']==feature_count):
+        # get duration of cycle
+        duration=ser.read_until().decode('utf-8')
 
-    add_datapoint()
+
+        # prepare row. combine all lists of measurements to one list
+        row=[]
+        for key in measurements.keys():
+            row.append(measurements[key])
+        row.append(duration)
+        # row includes now all presure, acceL_x, accel_y, accel_z, gyro_x, gyro_y, gryo_z values and duration
+
+        # insert new datapoint in csv
+        with open(csv,'a') as f:
+            writer=csv.writer(f)
+            writer.writerow(row)
