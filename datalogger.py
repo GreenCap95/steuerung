@@ -35,6 +35,9 @@ Wenn ein Zyklus beendet wurde wird zusätzlich die Dauer des Zykluses übermitte
 ======= Next =======
 Do it, test it, repeat.
 """
+#===============================================================================
+import serial
+import csv
 """
 function read_values
     pass in: nothing
@@ -44,6 +47,24 @@ function read_values
     return: list of values [p,ax,ay,az,gx,gy,gz,(t)]
 endfunction
 """
+def read_values():
+    """Uses a serial object to read values while data is coming in.
+    returns a list of values recieved.
+    Read input need to be floats.
+    Only recieves sensor values, not cycle time!"""
+    values=[]
+    global ser
+    # arduino needs to send seven values for every sensor reading
+    while ser.in_waiting>0:
+        value=ser.readline().decode('utf-8')
+        values.append(value)
+        # only read next values in line if not all values for current sensor
+        # reading have been collected
+        if len(values)<7:
+            continue
+        else:
+            break
+    return values
 
 """ 
 function collect_values()
@@ -61,6 +82,15 @@ function collect_values()
     return: nothing
 endfunction
 """
+def collect_mesurements(values,measurements):
+    """This function takes values read from the serial input and stores them in lists of corresponding measurements. returns dict with lists of sensor values
+    The order of measurements in "values" need to be rigid
+    Parameters:
+    values=[p,ax,ay,az,gx,gy,gz]
+    measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}"""
+    for key in measurements.keys():
+        measurements[key].append(values.pop(index=0))
+    return measurements
 
 """ 
 function add_datapoint()
@@ -71,3 +101,31 @@ function add_datapoint()
     hänge strings als neue zeile an die csv Datei an
     return: nothing
 """
+def add_datapoint(csv, measurements):
+    """ Appends all measurements belonging to one datapoint into csv file.
+    csv is the path string of the csv to store values in
+    measurements is dict with lists of corresponding measuremt values"""
+
+    # prepare row. combine all lists of measurements to one list
+    row=[]
+    for key in measurements.keys():
+        row.append(measurements[key])
+
+    with open(csv,'a') as f:
+        writer=csv.writer(f)
+        writer.writerow(row)
+
+# MAINLOOP
+# TODO add serial device name for Arduino
+ser=serial.Serial('', 115200, timeout=1)
+ser.flush()
+
+measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
+
+# TODO set up csv file and create variable for it
+
+while True:
+    # wait for arduino to transfer all values
+    read_values()
+    collect_mesurements()
+    add_datapoint()
