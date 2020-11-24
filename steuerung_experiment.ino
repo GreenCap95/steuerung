@@ -7,97 +7,9 @@
 // - Drucksensorwerte auslesen
 // - B-Sensorwerte auslesen
 
-//***Pseudo code***
-
-/*
-initialize pin number variables for mechanical parts
-initialize status variables for buttons and switches
-initialize variable last millis
-set cycles to wanted amount
-
-function close_door
-    pass in: nothing
-    call: open_supply_valve()
-    call: route_air_close()
-    set door is closing flag to True
-    return: nothing
-endfunction
-
-function open_door
-    pass in: nothing
-    call: open_supply_valve()
-    call: route_air_open()
-    set door is opening flag to True
-    return: nothing
-endfunction
-
-function send_datapoint
-    pass in: noting
-    write pressure values of last cycle as serial output
-    write acceleration values of last cycle as serial output                    
-    write duration of last cycle as serival output
-    return: nothing
-endfunction
-
-function open_supply_valve
-    pass in: nothing
-    set value of pin signal to open supply valve
-    return: nothing
-endfunction
-
-function shut_supply_valve
-    pass in: nothing
-    set value of pin signal to shut supply valve
-    return: nothing
-endfunction
-
-function setup
-    pass in: nothing
-    define pinmodes for each used pin as input or output
-    set button and switch statuses to LOW
-    set last millis to current time
-endfunction
-
-function route_air_open
-    pass in: nothing
-    set pin to route air to open the door
-    return: nothing
-endfunction
-
-function route_air_close
-    pass in: nothing
-    set pin to route air to close the door
-    return: nothing
-endfunction
-
-function loop
-    pass in: nothing
-    if cycle counter is less than cycles wanted
-        update switch statuses
-
-        if door is closing or if door is opening of if door is open
-            // dataloging cycle ends when door is closed again
-            if it has been 0.2 sec since last measurement
-                update list of pressure values
-                update liste of acceleration values
-        
-        if door is closed
-            call: shut_supply_valve()
-            set door is closing flag to false
-            add one to cycle counter
-            if door has been closed for 0.5 sec
-                call: send_datapoint()
-                call: open_door()
-
-        if door is open
-            if supply valve is not shut
-                call: shut_supply_valve()
-                set door is opening flag to false
-            if door has been open for 0.5 sec
-                call: close_door()
-    else
-        terminate program
-*/
+// load libaries
+#include <Adafruit_LSM6DS33.h>
+#include <map>
 
 // assign pin numbers
 int button_close=2;
@@ -108,6 +20,9 @@ int valve_close_door=7;
 int valve_open_door=8;
 int valve_supply=6;
 int piep=11;
+
+// define sensor objects
+Adafruit_LSM6DS33 lsm6ds33;
 
 // define process variables
 bool button_close_pressed=false;
@@ -121,6 +36,16 @@ unsigned long last_millis;
 int cycles_to_perform=2;
 int cycle_counter=0;
 
+// define containers for sensor values
+list<float> cycle_accel_x;
+list<float> cycle_accel_y;
+list<float> cycle_accel_z;
+list<float> cycle_gyro_x;
+list<float> cycle_gyro_y;
+list<float> cycle_gyro_z;
+list<float> cycle_presure;
+
+// Funcitons to controll door movement
 void open_door(){
     open_supply_valve();
     route_air_open();
@@ -133,8 +58,34 @@ void close_door(){
     door_is_closing=true;
 }
 
-void send_datapoint(){
+void send_datapoint(float pressure_values[],float acce_x[],float acce_y[],
+float acce_z[], float gyro_x[], float gyro_y[], float gyro_z[], int duration){
+    Serial.write(pressure_values);
+    Serial.write(acce_x);
+    Serial.write(acce_y);
+    Serial.write(acce_z);
+    Serial.write(gyro_x);
+    Serial.write(gyro_y);
+    Serial.write(gyro_z);
+    Serial.write(duration);
     return;
+}
+
+map read_lsm6ds33()
+{
+    sensors_event_t accel;
+    sensors_event_t gyro;
+    senosrs_event_t temp;
+    lsm6ds33.getEvent(&accel, &gyro, &temp);
+    map <char, float> lsm6ds33_values={
+        {"accel_x",accel.acceleration.x},
+        {"accel_y",accel.acceleration.y},
+        {"accel_z",accel.acceleration.z},
+        {"gyro_x",gyro.gyro.x},
+        {"gyro_y",gyro.gyro.y},
+        {"gyro_z",gyro.gyro.z},
+    };
+    return lsm6ds33_values;
 }
 
 // Functions to controll valves
@@ -153,8 +104,11 @@ void route_air_open(){
 void route_air_close(){
     digitalWrite(valve_close_door,LOW)
 }
-
-void setup(){
+//==============================================================================
+//==============================================================================
+void setup()
+{
+    // setup pinmodes
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
     pinMode(switch_door_open, INPUT);
@@ -166,10 +120,10 @@ void setup(){
     digitalWrite(6,HIGH);
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
-
+    
     last_millis=millis();
 
-    // main loop
+    // *****main loop*****
     while (cycle_counter<cycles_to_perform)
     {
         // update process variables
@@ -186,6 +140,16 @@ void setup(){
             {
                 // TODO: update pressure and acceleration value lists for this
                 // cycle
+                // read current accelerometer values
+                lsm6ds33_values=read_lsm6ds33();
+                // fill value list for current datapoint/cycle
+                cycle_accel_x.push_back(lsm6ds33_values["accel_x"]);
+                cycle_accel_y.push_back(lsm6ds33_values["accel_y"]);
+                cycle_accel_z.push_back(lsm6ds33_values["accel_z"]);
+                cycle_gyro_x.push_back(lsm6ds33_values["gyro_x"]);
+                cycle_gyro_y.push_back(lsm6ds33_values["gyro_y"]);
+                cycle_gyro_z.push_back(lsm6ds33_values["gyro_z"]);
+                // add temperature?
             }
 
             if (door_is_closed)
@@ -200,7 +164,7 @@ void setup(){
                 }
             }
             
-            if (door_is_open))
+            if (door_is_open)
             {
                 close_supply_valve();
                 door_is_opening=false;
@@ -213,8 +177,10 @@ void setup(){
     }
 }
 
-void loop(){
+void loop()
+{
     // this loop does nothing except holding the arduino idle after the
     // experiment is completed. In order to rerun the experiment
     // the arduino needs to be reset.
+    delay(1000);
 }

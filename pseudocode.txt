@@ -1,0 +1,116 @@
+initialize pin number variables for mechanical parts
+initialize status variables for buttons and switches
+initialize variable last millis
+set cycles to wanted amount
+
+function close_door
+    pass in: nothing
+    call: open_supply_valve()
+    call: route_air_close()
+    set door is closing flag to True
+    return: nothing
+endfunction
+
+function open_door
+    pass in: nothing
+    call: open_supply_valve()
+    call: route_air_open()
+    set door is opening flag to True
+    return: nothing
+endfunction
+
+function send_datapoint
+    pass in: pressure data (array), acceleration data (array for x,y,z respekti)
+    send pressure data array via serial connection
+    send acceleration x data via serial
+    send acceleration y data via serial
+    send acceleration z data via serial
+    send time duration of cycle
+    return: nothing
+endfunction
+
+function setup_lsm6ds33
+    pass in: nothing
+    if acitvation of i2c connection fails
+        print hint to serial output
+        enter infinit loop
+    set acceleration range to ??
+    set gyro range to ??
+    set acceleration data rate to ?? Hz
+    set gyro data rate to ?? Hz
+endfunction
+
+function read_lsm6ds33
+    pass in: nothing
+    create acceleration event
+    create gyro event
+    create temperature event
+    call lsm6ds33.getEvent on event objects by reference to fill events with current values
+    write x acceleration value to dict
+    write y acceleration value to dict
+    write z acceleration value to dict
+    write x gyro value to dict
+    write y gyro value to dict
+    write z gyro value to dict
+    return: dict with keys: valuenames values: sensorvalues
+endfunction
+
+function open_supply_valve
+    pass in: nothing
+    set value of pin signal to open supply valve
+    return: nothing
+endfunction
+
+function shut_supply_valve
+    pass in: nothing
+    set value of pin signal to shut supply valve
+    return: nothing
+endfunction
+
+function setup
+    pass in: nothing
+    define pinmodes for each used pin as input or output
+    set button and switch statuses to LOW
+    set last millis to current time
+endfunction
+
+function route_air_open
+    pass in: nothing
+    set pin to route air to open the door
+    return: nothing
+endfunction
+
+function route_air_close
+    pass in: nothing
+    set pin to route air to close the door
+    return: nothing
+endfunction
+
+function setup
+    pass in: nothing
+    if cycle counter is less than cycles wanted
+        update switch statuses
+
+        if door is closing or if door is opening of if door is open
+            // dataloging cycle ends when door is closed again
+            if it has been 0.2 sec since last measurement
+                call: read_lsm6ds33() and assign returned dict to variable
+                update list of pressure values
+                update liste of acceleration values with new measurements
+        
+        if door is closed
+            call: shut_supply_valve()
+            set door is closing flag to false
+            add one to cycle counter
+            if door has been closed for 0.5 sec
+                call: send_datapoint()
+                call: open_door()
+
+        if door is open
+            if supply valve is not shut
+                call: shut_supply_valve()
+                set door is opening flag to false
+            if door has been open for 0.5 sec
+                call: close_door()
+    else
+        terminate program
