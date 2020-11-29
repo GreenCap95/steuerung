@@ -135,7 +135,17 @@ void setup()
             close_supply_valve();
             door_is_closing=false;
             cycle_counter++;
+
+            // => send cycle duration to Pi 
+            // check if Pi is ready to recieve duration value
+            int ready_t=Serial.read();
+            if (ready_t==2);
+            {
+                t=millis()-millis_cycle_start 
+                Serial.write(t)
+            }
             open_door();
+            millis_cycle_start=millis()
         }
             
         if (door_is_open)
@@ -149,24 +159,26 @@ void setup()
         }
         // <=
 
-        // => read sensors
+        
         // while the door is not yet closed again...
         if (door_is_closing or door_is_opening or door_is_open)
         {
             // ...read sensor values every 0.2s
             if ((millis()-last_millis)>200)
             {
+                // => read sensors
                 // read pressur value
 
-                // read acceleration and gyro values
                 // update lsm6ds33 events
-                lsm6ds33.getEvent(&accel, &gyro, &temp);
+                lsm6ds33.getEvent(&accel, &gyro, &temp); 
+                // read acceleration and gyro values
                 float ax=accel.acceleration.x;
                 float ay=accel.acceleration.y;
                 float az=accel.acceleration.z;
                 float gx=gyro.gyro.x;
                 float gy=gyro.gyro.y;
                 float gz=gyro.gyro.z;
+                // <=
 
                 // => send sensor values to Pi
                 // check if Pi is ready to recieve sensor values
@@ -185,10 +197,7 @@ void setup()
                 // <=
 
                 // calc duration if cycle has ended aka door has been closed
-                if (door_is_closed)
-                {
-                    t=millis()-millis_cycle_start 
-                }
+                
         // <=
 
         

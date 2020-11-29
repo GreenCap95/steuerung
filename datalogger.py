@@ -39,6 +39,10 @@ Do it, test it, repeat.
 import serial
 import csv
 #-------------------------------------------------------------------------------
+# => set up constants
+TIMEFRAME=30 # duration of every datapoint
+STEP=0.2 # time in s between two sensor readings
+values_count=TIMEFRAME//STEP # number of readings for each values during a cycle
 #--- set up variables ---
 values=[] # holds current sensor readings
 measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
@@ -106,8 +110,18 @@ while True:
     # => recieve duration of cycle
     # signale arduino that all sensor values for this cycle are available
     # except duration!!
-    ser.write(str(2).encode('utf-8')) # 2 means all values there, ready to recieve duration
-    
+    # signal Arduino that Pi is ready to recieve duration if all measurements
+    # for this datapoint are ready to be written to the csv file
+    if len(measurements['p'])==values_count:
+        ser.write(str(2).encode('utf-8')) # 2 means all values there, ready to recieve duration
+        if ser.in_waiting>0:
+            # duration gets send from the arduino
+            t=ser.read_until().decode('utf-8')
+
+        # => write datapoint to csv
+    # <=
+        
+
 
     ser.write(b"ok\n")
     # wait for arduino to transfer all values for current sensor reading
