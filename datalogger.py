@@ -73,6 +73,34 @@ with open(csv_file,'a') as f:
 #-------------------------------------------------------------------------------
 # MAINLOOP
 while True:
+    # check if Arduino is ready to transmit data
+    if (ser.in_waiting>0) & (ser.read_until().decode('uft-8')=="ok"):
+        # Arduino is ready to transmit
+        # Arduino transmits every value individualy p,ax,ay,az,gx,gy,gz,(t)
+        # every values is send in a line of its own
+        p=ser.read_until().decode('utf-8')
+        measurements['p'].append(p)
+
+        ax=ser.read_until().decode('utf-8')
+        measurements['ax']=ax
+
+        ay=ser.read_until().decode('utf-8')
+        measurements['ay']=ay
+
+        az=ser.read_until().decode('utf-8')
+        measurements['az']=az
+
+        gx=ser.read_until().decode('utf-8')
+        measurements['gx']=gx
+
+        gy=ser.read_until().decode('utf-8')
+        measurements['gy']=gy
+
+        gz=ser.read_until().decode('utf-8')
+        measurements['gz']=gz
+
+    
+    ser.write(b"ok\n")
     # wait for arduino to transfer all values for current sensor reading
     while ser.in_waiting>0:
         value=ser.read_until().decode('utf-8')

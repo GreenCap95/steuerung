@@ -58,10 +58,9 @@ void close_door(){
     door_is_closing=true;
 }
 
-void send_sensor_values(float pressure_values[],float acce_x[],float acce_y[],
-float acce_z[], float gyro_x[], float gyro_y[], float gyro_z[], int duration){
+void send_sensor_values(map lsm6ds33_values){
     Serial.println(pressure_values);
-    Serial.println(acce_x);
+    Serial.println(lsm6ds33_values[""]);
     Serial.println(acce_y);
     Serial.println(acce_z);
     Serial.println(gyro_x);
@@ -72,12 +71,10 @@ float acce_z[], float gyro_x[], float gyro_y[], float gyro_z[], int duration){
 
 map read_lsm6ds33()
 {
-    sensors_event_t accel;
-    sensors_event_t gyro;
-    senosrs_event_t temp;
-    lsm6ds33.getEvent(&accel, &gyro, &temp);
+    
+    
     map <char, float> lsm6ds33_values={
-        {"ax",accel.acceleration.x},
+        {"ax",},
         {"ay",accel.acceleration.y},
         {"az",accel.acceleration.z},
         {"gx",gyro.gyro.x},
@@ -85,6 +82,15 @@ map read_lsm6ds33()
         {"gz",gyro.gyro.z},
     };
     return lsm6ds33_values;
+}
+
+// Function for serial communication
+void ready()
+{
+    // Arduino signal Pi that is it ready for serial communication
+    Serial.println("ok");
+    // wait for response
+    while
 }
 
 // Functions to controll valves
@@ -124,6 +130,10 @@ void setup()
     int millis_cycle_start;
     int millis_cycle_end;
 
+    sensors_event_t accel;
+    sensors_event_t gyro;
+    senosrs_event_t temp;
+
     // *****main loop*****
     while (cycle_counter<cycles_to_perform)
     {
@@ -133,36 +143,68 @@ void setup()
         door_is_closed=(switch_door_closed==HIGH);
         door_is_open=(switch_door_open==HIGH);
 
+        // => control door
+        if (door_is_closed)
+        {
+            close_supply_valve();
+            door_is_closing=false;
+            cycle_counter++;
+            open_door();
+        }
+            
+        if (door_is_open)
+        {
+            close_supply_valve();
+            door_is_opening=false;
+            if ((millis()-last_millis)>500)
+            {
+                close_door();
+            }
+        }
+        // <=
+
+        // => read sensors
+        // while the door is not yet closed again...
         if (door_is_closing or door_is_opening or door_is_open)
         {
-            // read sensors every x ms while the door is not closed again yet
+            // ...read sensor values every 0.2s
             if ((millis()-last_millis)>200)
             {
+                // read pressur value
+
+                // read acceleration and gyro values
+                // update lsm6ds33 events
+                lsm6ds33.getEvent(&accel, &gyro, &temp);
+                float ax=accel.acceleration.x;
+                float ay=accel.acceleration.y;
+                float az=accel.acceleration.z;
+                float gx=gyro.gyro.x;
+                float gy=gyro.gyro.y;
+                float gz=gyro.gyro.z;
+
+                // calc duration if cycle has ended aka door has been closed
+                if (door_is_closed)
+                {
+                    t=millis()-millis_cycle_start 
+                }
+        // <=
+
+                // signal pi that A is ready for transmission
+                Serial.println("ok");
+                // wait for pi to get ready
+                while 
+                // read every single sensor values and send it right away
+
+                // TODO add function to read pressure sensor
                 lsm6ds33_values=read_lsm6ds33();
+                // when ready signal pi that values are ready to transmit
+                Serial.println("ok");
                 // TODO add function to read pressure sensor
                 // TODO add parameters to function below
                 send_sensor_values();
             }
 
-            if (door_is_closed)
-            {
-                close_supply_valve();
-                door_is_closing=false;
-                cycle_counter++;
-                // calc and send duration of cycle
-                Serial.println(millis_cycle_end-millis_cycle_start)
-                open_door();
-            }
-            
-            if (door_is_open)
-            {
-                close_supply_valve();
-                door_is_opening=false;
-                if ((millis()-last_millis)>500)
-                {
-                    close_door();
-                }
-            }
+           
         }
     }
 }
