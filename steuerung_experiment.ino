@@ -142,13 +142,15 @@ void setup()
             // => send cycle duration to Pi 
             // check if Pi is ready to recieve duration value
             int ready_t=Serial.read();
-            if (ready_t==2);
+            if (ready_t==2) & (cycle_counter!=1)
+            // Pi is ready and its not the beginning of the first cycle
             {
                 t=millis()-millis_cycle_start 
                 Serial.write(t)
             }
             open_door();
-            millis_cycle_start=millis()
+            millis_cycle_start=millis();
+            door_is_closed=false;
         }
             
         if (door_is_open)
