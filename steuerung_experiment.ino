@@ -25,6 +25,9 @@ int piep=11;
 Adafruit_LSM6DS33 lsm6ds33;
 
 // define process variables
+int TIMEFRAME=30 // timeframe in s in which to make evenly spaced measurments
+int STEP=0.2 // sec between two measurments. TIMEFRAME must be dividabl by STEP
+int values_count=TIMEFRAME/STEP // amount of measurments per timeframe
 bool button_close_pressed=false;
 bool button_open_pressed=false;
 bool door_is_closing=false;
