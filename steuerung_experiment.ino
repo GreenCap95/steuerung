@@ -69,20 +69,6 @@ void send_sensor_values(map lsm6ds33_values){
     return;
 }
 
-map read_lsm6ds33()
-{
-    
-    
-    map <char, float> lsm6ds33_values={
-        {"ax",},
-        {"ay",accel.acceleration.y},
-        {"az",accel.acceleration.z},
-        {"gx",gyro.gyro.x},
-        {"gy",gyro.gyro.y},
-        {"gz",gyro.gyro.z},
-    };
-    return lsm6ds33_values;
-}
 
 // Function for serial communication
 void ready()
@@ -189,6 +175,21 @@ void setup()
                 }
         // <=
 
+        // => send sensor values to Pi
+        // check if Pi is ready to recieve sensor values
+        int pi_ready=Serial.read(); // ready==1 means ready
+        if (pi_ready==1)
+        // ... send sensor values and duration if available
+        {
+            Serial.write(p);
+            Serial.write(ax);
+            Serial.write(ay);
+            Serial.write(az);
+            Serial.write(gx);
+            Serial.write(gy);
+            Serial.write(gz);
+        }
+        // <=
                 // signal pi that A is ready for transmission
                 Serial.println("ok");
                 // wait for pi to get ready

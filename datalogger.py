@@ -73,8 +73,10 @@ with open(csv_file,'a') as f:
 #-------------------------------------------------------------------------------
 # MAINLOOP
 while True:
+    # signal Arduino that Pi is ready to recieve sensor values
+    ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
     # check if Arduino is ready to transmit data
-    if (ser.in_waiting>0) & (ser.read_until().decode('uft-8')=="ok"):
+    if ser.in_waiting>0:
         # Arduino is ready to transmit
         # Arduino transmits every value individualy p,ax,ay,az,gx,gy,gz,(t)
         # every values is send in a line of its own
