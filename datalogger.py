@@ -43,7 +43,7 @@ TIMEFRAME=30 # duration of every datapoint, cycle duration must be shorter
 STEP=0.2 # time in s between two sensor readings
 values_count=TIMEFRAME//STEP # number of readings for each values during a cycle
 values=[] # holds current sensor readings
-measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
+measurements={}
 feature_count=500 
 # TODO add serial device name for Arduino
 ser=serial.Serial('', 115200, timeout=1)
@@ -118,5 +118,9 @@ while True:
             with open(csv,'a') as f:
                 writer=csv.writer(f)
                 writer.writerow(row)
+            # empty measurments lists for next datapoint
+            measurements={}
+
+            
             # <=
     # <=
