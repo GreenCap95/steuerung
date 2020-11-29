@@ -198,33 +198,7 @@ void setup()
                     Serial.write(gz);
                 }
                 // <=
-
-                // calc duration if cycle has ended aka door has been closed
-                
-        // <=
-
-        
-
-        // => send duration
-        // if cycle is completed send duration
-        
-        // sing
-                // signal pi that A is ready for transmission
-                Serial.println("ok");
-                // wait for pi to get ready
-                while 
-                // read every single sensor values and send it right away
-
-                // TODO add function to read pressure sensor
-                lsm6ds33_values=read_lsm6ds33();
-                // when ready signal pi that values are ready to transmit
-                Serial.println("ok");
-                // TODO add function to read pressure sensor
-                // TODO add parameters to function below
-                send_sensor_values();
             }
-
-           
         }
     }
 }

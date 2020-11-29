@@ -120,7 +120,5 @@ while True:
                 writer.writerow(row)
             # empty measurments lists for next datapoint
             measurements={}
-
-            
             # <=
     # <=
