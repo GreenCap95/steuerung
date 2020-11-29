@@ -35,33 +35,23 @@ Wenn ein Zyklus beendet wurde wird zusätzlich die Dauer des Zykluses übermitte
 ======= Next =======
 Do it, test it, repeat.
 """
-#===============================================================================
 import serial
 import csv
-#-------------------------------------------------------------------------------
-# => set up constants
-TIMEFRAME=30 # duration of every datapoint
+
+# ==> set up variables
+TIMEFRAME=30 # duration of every datapoint, cycle duration must be shorter
 STEP=0.2 # time in s between two sensor readings
 values_count=TIMEFRAME//STEP # number of readings for each values during a cycle
-#--- set up variables ---
 values=[] # holds current sensor readings
 measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]}
-# TODO wähle feature_count so, dass stets genug Messpunkte aufgenommen werden
-# um auch den längsten Zyklus vollständig abzubilden
-# feature_count*time_between_sensor_reading> längste Zykluszeit
 feature_count=500 
 # TODO add serial device name for Arduino
 ser=serial.Serial('', 115200, timeout=1)
 ser.flush()
 csv_file="data.csv"
-#--------------------------------------
+# <==
 
-
-
-
-
-#-------------------------------------------------------------------------------
-# set up header in csv file
+# => set up header in csv file
 header=["id"]
 # add column header for all presure, accel and gyro values
 readings=["p","ax","ay","az","gx","gy","gz"] # values read from sensors
@@ -74,7 +64,7 @@ header.append("t") # column holds duration of cycle
 with open(csv_file,'a') as f:
         writer=csv.writer(f,delimiter=",")
         writer.writerow(header)
-#-------------------------------------------------------------------------------
+# <=
 # MAINLOOP
 while True:
     # => recieve sensor values and store them
