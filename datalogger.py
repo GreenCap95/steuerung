@@ -118,42 +118,15 @@ while True:
             # duration gets send from the arduino
             t=ser.read_until().decode('utf-8')
 
-        # => write datapoint to csv
+            # => write datapoint to csv
+            # prepare row. combine all lists of measurements to one list
+            row=[]
+            for key in measurements.keys():
+                row.append(measurements[key])
+            row.append(t)
+            # insert new datapoint in csv
+            with open(csv,'a') as f:
+                writer=csv.writer(f)
+                writer.writerow(row)
+            # <=
     # <=
-        
-
-
-    ser.write(b"ok\n")
-    # wait for arduino to transfer all values for current sensor reading
-    while ser.in_waiting>0:
-        value=ser.read_until().decode('utf-8')
-        values.append(value)
-        # only read next values in line if not all values for current sensor
-        # reading have been collected
-        if len(values)<7:
-            continue
-        else:
-            # continue to store sensor values
-            break
-
-    # collect measurements for current datapoint
-    for key in measurements.keys():
-        measurements[key].append(values.pop(index=0))
-
-    # check if all data for datapoint has been collected
-    if len(measurements['p']==feature_count):
-        # get duration of cycle
-        duration=ser.read_until().decode('utf-8')
-
-
-        # prepare row. combine all lists of measurements to one list
-        row=[]
-        for key in measurements.keys():
-            row.append(measurements[key])
-        row.append(duration)
-        # row includes now all presure, acceL_x, accel_y, accel_z, gyro_x, gyro_y, gryo_z values and duration
-
-        # insert new datapoint in csv
-        with open(csv,'a') as f:
-            writer=csv.writer(f)
-            writer.writerow(row)
