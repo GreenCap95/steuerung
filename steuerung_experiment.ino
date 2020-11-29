@@ -168,6 +168,22 @@ void setup()
                 float gy=gyro.gyro.y;
                 float gz=gyro.gyro.z;
 
+                // => send sensor values to Pi
+                // check if Pi is ready to recieve sensor values
+                int pi_ready=Serial.read(); // ready==1 means ready
+                if (pi_ready==1)
+                // ... send sensor values and duration if available
+                {
+                    Serial.write(p);
+                    Serial.write(ax);
+                    Serial.write(ay);
+                    Serial.write(az);
+                    Serial.write(gx);
+                    Serial.write(gy);
+                    Serial.write(gz);
+                }
+                // <=
+
                 // calc duration if cycle has ended aka door has been closed
                 if (door_is_closed)
                 {
@@ -175,21 +191,12 @@ void setup()
                 }
         // <=
 
-        // => send sensor values to Pi
-        // check if Pi is ready to recieve sensor values
-        int pi_ready=Serial.read(); // ready==1 means ready
-        if (pi_ready==1)
-        // ... send sensor values and duration if available
-        {
-            Serial.write(p);
-            Serial.write(ax);
-            Serial.write(ay);
-            Serial.write(az);
-            Serial.write(gx);
-            Serial.write(gy);
-            Serial.write(gz);
-        }
-        // <=
+        
+
+        // => send duration
+        // if cycle is completed send duration
+        
+        // sing
                 // signal pi that A is ready for transmission
                 Serial.println("ok");
                 // wait for pi to get ready

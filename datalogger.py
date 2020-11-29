@@ -73,6 +73,7 @@ with open(csv_file,'a') as f:
 #-------------------------------------------------------------------------------
 # MAINLOOP
 while True:
+    # => recieve sensor values and store them
     # signal Arduino that Pi is ready to recieve sensor values
     ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
     # check if Arduino is ready to transmit data
@@ -100,8 +101,14 @@ while True:
 
         gz=ser.read_until().decode('utf-8')
         measurements['gz']=gz
+    # <=
 
+    # => recieve duration of cycle
+    # signale arduino that all sensor values for this cycle are available
+    # except duration!!
+    ser.write(str(2).encode('utf-8')) # 2 means all values there, ready to recieve duration
     
+
     ser.write(b"ok\n")
     # wait for arduino to transfer all values for current sensor reading
     while ser.in_waiting>0:
