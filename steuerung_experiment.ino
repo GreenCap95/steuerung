@@ -37,7 +37,8 @@ bool door_is_closed=false;
 
 unsigned long millis_last_reading; // time by then  sensors had been read last
 unsigned long millis_door_opened=0; // time by then door is completly open
-int timeframe_door_open=2000; // ms door stays opened 
+unsigned long millis_door_closed=0; // time by then door is completly closed
+int timeframe_door_idle=2000; // ms door stays opened or closed
 int cycles_to_perform=2;
 int cycle_counter=0;
 
@@ -135,7 +136,7 @@ void setup()
     // *****main loop*****
     while (cycle_counter<cycles_to_perform)
     {
-        // ==> check door status
+        // ==> check current door status
         // door can only be open, if it was opening before
         if (door_is_opening)
         {
@@ -158,14 +159,15 @@ void setup()
         }
         // <==
 
-        // => control door depending on door status
+        // ==> control door depending on door status
         if (door_is_open)
         {
             // check if door has been open for specified time
-            if (millis()-millis_door_opened>timeframe_door_open)&(millis_door_opened!=0)
+            if (millis()-millis_door_opened>timeframe_door_idle)&(millis_door_opened!=0)
             {
                 // close door
                 close_door();
+                door_is_open=false;
                 // reset open door time tracker
                 millis_door_opened=0;
             }
@@ -179,15 +181,52 @@ void setup()
             {
                 close_supply_valve();
                 // log time when door has been opened
-                // only if 
                 millis_door_opened=millis();
             }
-            
-            
         }
         if (door_is_closed)
         {
             // TODO add same logic as above when door was just opened
+            // check if door has been closed for specified time
+            if (millis()-millis_door_closed>timeframe_door_idle) & (millis_door_closed!=0)
+            {
+                open_door();
+                door_is_closed=false;
+                // reset closed door time tracker
+                millis_door_closed=0;
+            }
+            // check if door is closed and waiting
+            // door is closed since 50ms
+            else if (millis()-millis_door_closed>50) & (millis_door_closed!=0)
+            {
+                // wait until door has been closed for the wished duration
+            }
+            else // door has just been closed (just 50ms ago)
+            {
+                close_supply_valve();
+                // log time when door  has been closed
+                millis_door_closed=millis();
+            }
+        // <==
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             close_supply_valve();
             door_is_closing=false;
             cycle_counter++;
