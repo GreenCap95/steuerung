@@ -35,7 +35,9 @@ bool door_is_opening=false;
 bool door_is_open=false;
 bool door_is_closed=false;
 
-unsigned long last_millis;
+unsigned long millis_last_reading; // time by then  sensors had been read last
+unsigned long millis_door_opened=0; // time by then door is completly open
+int timeframe_door_open=2000; // ms door stays opened 
 int cycles_to_perform=2;
 int cycle_counter=0;
 
@@ -123,34 +125,89 @@ void setup()
     sensors_event_t gyro;
     senosrs_event_t temp;
 
+    // ==> start first cycle
+    // door is still closed yet
+    open_door();
+    millis_cycle_start=millis();
+    millis_last_reading=millis();
+    // <==
+
     // *****main loop*****
     while (cycle_counter<cycles_to_perform)
     {
-        // update process variables
-        button_close_pressed=(button_close==HIGH);
-        button_open_pressed=(button_open==HIGH);
-        door_is_closed=(switch_door_closed==HIGH);
-        door_is_open=(switch_door_open==HIGH);
+        // ==> check door status
+        // door can only be open, if it was opening before
+        if (door_is_opening)
+        {
+            // check if door is open yet
+            door_is_open=(digitalRead(switch_door_open)==HIGH);
+            if (door_is_open)
+            {
+                // door is not opening any longer
+                door_is_opening=false;
+            }
+        }
+        if (door_is_closing)
+        {
+            // check if door is closed yet
+            door_is_closed=(digitalRead(switch_door_closed)==HIGH);
+            if (door_is_closed)
+            {
+                door_is_closing=false;
+            }
+        }
+        // <==
 
-        // => control door
+        // => control door depending on door status
+        if (door_is_open)
+        {
+            // check if door has been open for specified time
+            if (millis()-millis_door_opened>timeframe_door_open)&(millis_door_opened!=0)
+            {
+                // close door
+                close_door();
+                // reset open door time tracker
+                millis_door_opened=0;
+            }
+            // check if door is open and waiting
+            // door is open since 50ms
+            else if (millis()-millis_door_opened>50) & (millis_door_opened!=0)
+            {
+                // wait until door has been open for the wished duration
+            }
+            else // door has just been opened (not even 50ms ago)
+            {
+                close_supply_valve();
+                // log time when door has been opened
+                // only if 
+                millis_door_opened=millis();
+            }
+            
+            
+        }
         if (door_is_closed)
         {
+            // TODO add same logic as above when door was just opened
             close_supply_valve();
             door_is_closing=false;
             cycle_counter++;
 
             // => send cycle duration to Pi 
             // check if Pi is ready to recieve duration value
+            // initialy Pi sends 1 as it is ready to recieve the first sensor
+            // values, but not the duration (which is not available before the
+            // frist cycle has been completet)
             int ready_t=Serial.read();
-            if (ready_t==2) & (cycle_counter!=1)
+            if (ready_t==2)
             // Pi is ready and its not the beginning of the first cycle
             {
                 t=millis()-millis_cycle_start 
                 Serial.write(t)
             }
             open_door();
+            // log starting time for cycle
             millis_cycle_start=millis();
-            door_is_closed=false;
+            
         }
             
         if (door_is_open)
@@ -169,7 +226,7 @@ void setup()
         if (door_is_closing or door_is_opening or door_is_open)
         {
             // ...read sensor values every 0.2s
-            if ((millis()-last_millis)>200)
+            if ((millis()-millis_last_reading)>200)
             {
                 // => read sensors
                 // read pressur value
@@ -199,6 +256,8 @@ void setup()
                     Serial.write(gy);
                     Serial.write(gz);
                 }
+                // log time of last sensor reading
+                millis_last_reading=millis();
                 // <=
             }
         }
