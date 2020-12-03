@@ -43,7 +43,7 @@ TIMEFRAME=30 # duration of every datapoint, cycle duration must be shorter
 STEP=0.2 # time in s between two sensor readings
 values_count=TIMEFRAME//STEP # number of readings for each values during a cycle
 values=[] # holds current sensor readings
-measurements={}
+datapoint=[]
 feature_count=500 
 # TODO add serial device name for Arduino
 ser=serial.Serial('', 115200, timeout=1)
@@ -54,7 +54,7 @@ csv_file="data.csv"
 # => set up header in csv file
 header=["id"]
 # add column header for all presure, accel and gyro values
-readings=["p","ax","ay","az","gx","gy","gz"] # values read from sensors
+readings={} # values read from sensors
 for reading in readings:
     for i in range(feature_count):
         header.append(f"{reading}_{i}")
@@ -71,7 +71,9 @@ while True:
     # **** Anforderungen ****
     # - sende fortlaufend 2 während nur auf Zyklusdauer gewartet wird
     # ***********************
-    # => recieve sensor values and store them
+    
+    # ==> recieve sensor values and store them
+    # ToDo!! only send values when certain conditons are met
     # signal Arduino that Pi is ready to recieve sensor values
     ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
     # check if Arduino is ready to transmit data
@@ -80,37 +82,42 @@ while True:
         # Arduino transmits every value individualy p,ax,ay,az,gx,gy,gz,(t)
         # every values is send in a line of its own
         p=ser.read_until().decode('utf-8')
-        measurements['p'].append(p)
+        readings['p'].append(p)
 
         ax=ser.read_until().decode('utf-8')
-        measurements['ax']=ax
+        readings['ax']=ax
 
         ay=ser.read_until().decode('utf-8')
-        measurements['ay']=ay
+        readings['ay']=ay
 
         az=ser.read_until().decode('utf-8')
-        measurements['az']=az
+        readings['az']=az
 
         gx=ser.read_until().decode('utf-8')
-        measurements['gx']=gx
+        readings['gx']=gx
 
         gy=ser.read_until().decode('utf-8')
-        measurements['gy']=gy
+        readings['gy']=gy
 
         gz=ser.read_until().decode('utf-8')
-        measurements['gz']=gz
-    # <=
+        readings['gz']=gz
+    # <==
 
-    # => recieve duration of cycle
+    # ==> recieve duration of cycle
     # if all sensor values are collectet keep signaling arduino that Pi is ready
     # to recieve duration.
-    if len(measurements['p'])==values_count:
+    if len(readings['p'])==values_count:
         # all sensor values for current cycle are collectet
         # signal Arduino that Pi is ready to recieve duration (send 2)
-        ser.write(str(2).encode('utf-8')) 
-        if ser.in_waiting>0:
-            # duration gets send from the arduino
-            t=ser.read_until().decode('utf-8')
+        # TODO prevent arduino buffer from overflowing with 2
+        ser.write(str(2).encode('utf-8'))
+        # arduino only sends duration now after it read the readies signal (2)
+        # arduino now imediatly send duration
+        t=ser.read_until().decode('utf-8') # waits for up to one sec for input
+        # datapoint is missing only duration. Append to the end
+        datapoint.append(t)
+        # datapoint is now ready to be written to the csv fiel
+    # <==
 
             # => write datapoint to csv
             # prepare row. combine all lists of measurements to one list

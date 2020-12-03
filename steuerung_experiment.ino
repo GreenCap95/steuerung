@@ -222,7 +222,7 @@ void setup()
             // check if Pi is ready to recieve duration value
             // Pi is only ever sending 2 while it is waiting for the duration
             int ready_t=Serial.read();
-            if (ready_t==2)
+            if (ready_t=="2")
             {
                 // pi is ready
                 // calc and send duration to pi
