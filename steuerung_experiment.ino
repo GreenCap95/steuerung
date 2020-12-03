@@ -186,14 +186,16 @@ void setup()
         }
         if (door_is_closed)
         {
-            // TODO add same logic as above when door was just opened
             // check if door has been closed for specified time
             if (millis()-millis_door_closed>timeframe_door_idle) & (millis_door_closed!=0)
             {
+                // start new cycle
                 open_door();
                 door_is_closed=false;
-                // reset closed door time tracker
+                // reset variables for new cycle
                 millis_door_closed=0;
+                millis_cycle_start=millis(); // track beginning time of cycle
+                duration_send=false; // for this new cycle
             }
             // check if door is closed and waiting
             // door is closed since 50ms
@@ -209,6 +211,32 @@ void setup()
             }
         // <==
 
+        // ==> send sensor data
+        // <==
+
+        // ==> send duration of cycle
+        // the duration is only send when one cycle ended aka when the door
+        // closed. At this point the sensor reading may still continue
+        if (door_is_closed) & !(duration_send)
+        {
+            // check if Pi is ready to recieve duration value
+            // initialy Pi sends 1 as it is ready to recieve the first sensor
+            // values, but not the duration (which is not available before the
+            // frist cycle has been completet)
+            int ready_t=Serial.read();
+            if (ready_t==2)
+            {
+                // pi is ready
+                // calc and send duration to pi
+                t=millis()-millis_cycle_start 
+                Serial.write(t)
+                duration_send=true;
+            }
+            // use variable to not send duration more than once while door
+            // is closed
+            bool duration_send=true;
+        }
+        // <==
 
 
 
@@ -232,16 +260,10 @@ void setup()
             cycle_counter++;
 
             // => send cycle duration to Pi 
-            // check if Pi is ready to recieve duration value
-            // initialy Pi sends 1 as it is ready to recieve the first sensor
-            // values, but not the duration (which is not available before the
-            // frist cycle has been completet)
-            int ready_t=Serial.read();
-            if (ready_t==2)
+            
             // Pi is ready and its not the beginning of the first cycle
             {
-                t=millis()-millis_cycle_start 
-                Serial.write(t)
+                
             }
             open_door();
             // log starting time for cycle
@@ -300,6 +322,17 @@ void setup()
                 // <=
             }
         }
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 
