@@ -238,7 +238,8 @@ void setup()
                 float gy=gyro.gyro.y;
                 float gz=gyro.gyro.z;
 
-                // set variable to check if new readings are available
+                // update variables
+                millis_last_reading=millis();
                 new_readings_available=true;
             }
         }
@@ -262,6 +263,7 @@ void setup()
                 Serial.write(gy);
                 Serial.write(gz);
 
+                // update variables
                 new_readings_available=false;
             }
         }
