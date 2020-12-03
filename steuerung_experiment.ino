@@ -261,6 +261,8 @@ void setup()
                 Serial.write(gx);
                 Serial.write(gy);
                 Serial.write(gz);
+
+                new_readings_available=false;
             }
         }
         
