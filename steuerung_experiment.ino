@@ -35,10 +35,14 @@ bool door_is_opening=false;
 bool door_is_open=false;
 bool door_is_closed=false;
 
+// time relatet variables
 unsigned long millis_last_reading; // time by then  sensors had been read last
 unsigned long millis_door_opened=0; // time by then door is completly open
 unsigned long millis_door_closed=0; // time by then door is completly closed
 int timeframe_door_idle=2000; // ms door stays opened or closed
+int timeframe_measurement=15000; // timeframe while sensors are read
+int sensor_sampling_rate=200; // sensor values are read every x ms
+
 int cycles_to_perform=2;
 int cycle_counter=0;
 
@@ -212,6 +216,28 @@ void setup()
         // <==
 
         // ==> send sensor data
+        // Requirment: read sensors every x seconds in a timeframe of y seconds
+        // since the start of the cycle
+
+        // check if still in measurement timeframe since cycle started
+        if (millis()-millis_cycle_start<timeframe_measurement)
+        {
+            // check if its been x sec since last sensor reading
+            if (millis()-millis_last_reading>sensor_sampling_rate)
+            {
+                // read pressur value
+
+                // update lsm6ds33 events
+                lsm6ds33.getEvent(&accel, &gyro, &temp); 
+                // read acceleration and gyro values
+                float ax=accel.acceleration.x;
+                float ay=accel.acceleration.y;
+                float az=accel.acceleration.z;
+                float gx=gyro.gyro.x;
+                float gy=gyro.gyro.y;
+                float gz=gyro.gyro.z;
+            }
+        }
         // <==
 
         // ==> send duration of cycle
@@ -288,17 +314,7 @@ void setup()
             if ((millis()-millis_last_reading)>200)
             {
                 // => read sensors
-                // read pressur value
-
-                // update lsm6ds33 events
-                lsm6ds33.getEvent(&accel, &gyro, &temp); 
-                // read acceleration and gyro values
-                float ax=accel.acceleration.x;
-                float ay=accel.acceleration.y;
-                float az=accel.acceleration.z;
-                float gx=gyro.gyro.x;
-                float gy=gyro.gyro.y;
-                float gz=gyro.gyro.z;
+                
                 // <=
 
                 // => send sensor values to Pi
