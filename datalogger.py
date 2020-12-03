@@ -40,9 +40,9 @@ import csv
 
 # ==> set up variables
 TIMEFRAME=30 # duration of every datapoint, cycle duration must be shorter
-STEP=0.2 # time in s between two sensor readings
-values_count=TIMEFRAME//STEP # number of readings for each values during a cycle
-values=[] # holds current sensor readings
+STEP=0.2 # time in s between two sensor measurements
+values_count=TIMEFRAME//STEP # number of measurements for each values during a cycle
+values=[] # holds current sensor measurements
 datapoint=[]
 feature_count=500 
 # TODO add serial device name for Arduino
@@ -54,8 +54,8 @@ csv_file="data.csv"
 # => set up header in csv file
 header=["id"]
 # add column header for all presure, accel and gyro values
-readings={} # values read from sensors
-for reading in readings:
+measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]} # values read from sensors
+for reading in measurements:
     for i in range(feature_count):
         header.append(f"{reading}_{i}")
 header.append("t") # column holds duration of cycle
@@ -73,38 +73,38 @@ while True:
     # ***********************
 
     # ==> recieve sensor values and store them
-    # only signal Arduino that Pi is ready to recieve sensor readings if values
+    # only signal Arduino that Pi is ready to recieve sensor measurements if values
     # are still missing in datapoint
-    if len(readings['p']<values_count):
+    if len(measurements['p']<values_count):
         ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
         # Arduino send sensor reading imediatly after the signal has been send
         # read values for serial input and store them in dict
         p=ser.read_until().decode('utf-8')
-        readings['p'].append(p)
+        measurements['p'].append(p)
 
         ax=ser.read_until().decode('utf-8')
-        readings['ax']=ax
+        measurements['ax'].append(ax)
 
         ay=ser.read_until().decode('utf-8')
-        readings['ay']=ay
+        measurements['ay'].append(ay)
 
         az=ser.read_until().decode('utf-8')
-        readings['az']=az
+        measurements['az'].append(az)
 
         gx=ser.read_until().decode('utf-8')
-        readings['gx']=gx
+        measurements['gx'].append(gx)
 
         gy=ser.read_until().decode('utf-8')
-        readings['gy']=gy
+        measurements['gy'].append(gy)
 
         gz=ser.read_until().decode('utf-8')
-        readings['gz']=gz
-    # <==
+        measurements['gz'].append(gz)    
+        # <==
 
     # ==> recieve duration of cycle
     # if all sensor values are collectet keep signaling arduino that Pi is ready
     # to recieve duration.
-    if len(readings['p'])==values_count:
+    if len(measurements['p'])==values_count:
         # all sensor values for current cycle are collectet
         # signal Arduino that Pi is ready to recieve duration (send 2)
         # TODO prevent arduino buffer from overflowing with 2
