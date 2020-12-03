@@ -244,6 +244,17 @@ void setup()
         }
         // <==
 
+        // ==> send sensor readings
+        // check if new sensor readings are available
+        if (new_readings_available)
+        {
+            // check if Pi is ready to recieve sensor readings
+            // (while Pi is ready for that it keeps sending "1")
+            char ready_for_sensor_reading=Serial.read();
+        }
+        
+        // <==
+
         // ==> send duration of cycle
         // the duration is only send when one cycle ended aka when the door
         // closed. At this point the sensor reading may still continue
@@ -251,7 +262,7 @@ void setup()
         {
             // check if Pi is ready to recieve duration value
             // Pi is only ever sending 2 while it is waiting for the duration
-            int ready_t=Serial.read();
+            char ready_t=Serial.read();
             if (ready_t=="2")
             {
                 // pi is ready
