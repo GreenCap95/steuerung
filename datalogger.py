@@ -117,16 +117,16 @@ while True:
         # datapoint is now ready to be written to the csv fiel
     # <==
 
-    # ==> write datapoint to csv
-    # prepare row. combine all lists of measurements to one list
-    row=[]
-    for key in measurements.keys():
-        row.append(measurements[key])
-    row.append(t)
-    # insert new datapoint in csv
-    with open(csv,'a') as f:
-        writer=csv.writer(f)
-        writer.writerow(row)
-    # empty measurments lists for next datapoint
-    measurements={}
-    # <==
+    # # ==> write datapoint to csv
+    # # prepare row. combine all lists of measurements to one list
+    # row=[]
+    # for key in measurements.keys():
+    #     row.append(measurements[key])
+    # row.append(t)
+    # # insert new datapoint in csv
+    # with open(csv,'a') as f:
+    #     writer=csv.writer(f)
+    #     writer.writerow(row)
+    # # empty measurments lists for next datapoint
+    # measurements={}
+    # # <==
