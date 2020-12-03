@@ -265,7 +265,6 @@ void setup()
                 new_readings_available=false;
             }
         }
-        
         // <==
 
         // ==> send duration of cycle
@@ -289,86 +288,6 @@ void setup()
             bool duration_send=true;
         }
         // <==
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            close_supply_valve();
-            door_is_closing=false;
-            cycle_counter++;
-
-            // => send cycle duration to Pi 
-            
-            // Pi is ready and its not the beginning of the first cycle
-            {
-                
-            }
-            open_door();
-            // log starting time for cycle
-            millis_cycle_start=millis();
-            
-        }
-            
-        if (door_is_open)
-        {
-            close_supply_valve();
-            door_is_opening=false;
-            if ((millis()-last_millis)>500)
-            {
-                close_door();
-            }
-        }
-        // <=
-
-        
-        // while the door is not yet closed again...
-        if (door_is_closing or door_is_opening or door_is_open)
-        {
-            // ...read sensor values every 0.2s
-            if ((millis()-millis_last_reading)>200)
-            {
-                // => read sensors
-                
-                // <=
-
-                // => send sensor values to Pi
-                // check if Pi is ready to recieve sensor values
-                int pi_ready=Serial.read(); // ready==1 means ready
-                if (pi_ready==1)
-                // ... send sensor values and duration if available
-                {
-                    
-                }
-                // log time of last sensor reading
-                millis_last_reading=millis();
-                // <=
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
     }
 }
 
