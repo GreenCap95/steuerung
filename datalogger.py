@@ -54,7 +54,7 @@ csv_file="data.csv"
 # => set up header in csv file
 header=["id"]
 # add column header for all presure, accel and gyro values
-measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[]} # values read from sensors
+measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[],'t':[]} # values read from sensors
 for reading in measurements:
     for i in range(feature_count):
         header.append(f"{reading}_{i}")
@@ -113,7 +113,7 @@ while True:
         # arduino now imediatly send duration
         t=ser.read_until().decode('utf-8') # waits for up to one sec for input
         # datapoint is missing only duration. Append to the end
-        datapoint.append(t)
+        measurements['t'].append(t)
         # datapoint is now ready to be written to the csv fiel
     # <==
 
