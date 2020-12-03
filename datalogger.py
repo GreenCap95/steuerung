@@ -77,11 +77,8 @@ while True:
     # are still missing in datapoint
     if len(readings['p']<values_count):
         ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
-    # check if Arduino is ready to transmit data
-    if ser.in_waiting>0:
-        # Arduino is ready to transmit
-        # Arduino transmits every value individualy p,ax,ay,az,gx,gy,gz,(t)
-        # every values is send in a line of its own
+        # Arduino send sensor reading imediatly after the signal has been send
+        # read values for serial input and store them in dict
         p=ser.read_until().decode('utf-8')
         readings['p'].append(p)
 
