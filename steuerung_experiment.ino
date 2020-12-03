@@ -251,6 +251,17 @@ void setup()
             // check if Pi is ready to recieve sensor readings
             // (while Pi is ready for that it keeps sending "1")
             char ready_for_sensor_reading=Serial.read();
+            if (ready_for_sensor_reading=="1")
+            {
+                // Pi is ready to recieve readings
+                Serial.write(p);
+                Serial.write(ax);
+                Serial.write(ay);
+                Serial.write(az);
+                Serial.write(gx);
+                Serial.write(gy);
+                Serial.write(gz);
+            }
         }
         
         // <==
@@ -338,13 +349,7 @@ void setup()
                 if (pi_ready==1)
                 // ... send sensor values and duration if available
                 {
-                    Serial.write(p);
-                    Serial.write(ax);
-                    Serial.write(ay);
-                    Serial.write(az);
-                    Serial.write(gx);
-                    Serial.write(gy);
-                    Serial.write(gz);
+                    
                 }
                 // log time of last sensor reading
                 millis_last_reading=millis();
