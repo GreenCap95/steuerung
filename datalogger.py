@@ -73,9 +73,10 @@ while True:
     # ***********************
 
     # ==> recieve sensor values and store them
-    # ToDo!! only send values when certain conditons are met
-    # signal Arduino that Pi is ready to recieve sensor values
-    ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
+    # only signal Arduino that Pi is ready to recieve sensor readings if values
+    # are still missing in datapoint
+    if len(readings['p']<values_count):
+        ser.write(str(1)).encode('utf-8') # 1 means Pi is ready
     # check if Arduino is ready to transmit data
     if ser.in_waiting>0:
         # Arduino is ready to transmit
