@@ -220,9 +220,7 @@ void setup()
         if (door_is_closed) & !(duration_send)
         {
             // check if Pi is ready to recieve duration value
-            // initialy Pi sends 1 as it is ready to recieve the first sensor
-            // values, but not the duration (which is not available before the
-            // frist cycle has been completet)
+            // Pi is only ever sending 2 while it is waiting for the duration
             int ready_t=Serial.read();
             if (ready_t==2)
             {
