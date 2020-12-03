@@ -34,6 +34,7 @@ bool door_is_closing=false;
 bool door_is_opening=false;
 bool door_is_open=false;
 bool door_is_closed=false;
+bool new_readings_available=false;
 
 // time relatet variables
 unsigned long millis_last_reading; // time by then  sensors had been read last
@@ -215,7 +216,7 @@ void setup()
             }
         // <==
 
-        // ==> send sensor data
+        // ==> read sensor data
         // Requirment: read sensors every x seconds in a timeframe of y seconds
         // since the start of the cycle
 
@@ -236,6 +237,9 @@ void setup()
                 float gx=gyro.gyro.x;
                 float gy=gyro.gyro.y;
                 float gz=gyro.gyro.z;
+
+                // set variable to check if new readings are available
+                new_readings_available=true;
             }
         }
         // <==
