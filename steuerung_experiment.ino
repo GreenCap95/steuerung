@@ -209,6 +209,15 @@ void setup()
             }
         // <==
 
+        // ==> send sensor values while cycle is ongoing
+        // TODO put code here
+        // <==
+
+        // ==> send cycle duration if thats the last thing need by the Pi to
+        // write the next datapoint
+        // TODO put code here
+        // <==
+
 
 
 
