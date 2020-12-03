@@ -52,7 +52,7 @@ csv_file="data.csv"
 # <==
 
 # => set up header in csv file
-header=["id"]
+
 # add column header for all presure, accel and gyro values
 measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[],'t':[]} # values read from sensors
 for reading in measurements:
@@ -117,16 +117,17 @@ while True:
         # datapoint is now ready to be written to the csv fiel
     # <==
 
-    # # ==> write datapoint to csv
-    # # prepare row. combine all lists of measurements to one list
-    # row=[]
-    # for key in measurements.keys():
-    #     row.append(measurements[key])
-    # row.append(t)
-    # # insert new datapoint in csv
-    # with open(csv,'a') as f:
-    #     writer=csv.writer(f)
-    #     writer.writerow(row)
-    # # empty measurments lists for next datapoint
-    # measurements={}
-    # # <==
+    # ==> write datapoint to csv
+    # prepare row. combine all lists of measurements to one list
+    row=[]
+    for key in measurements.keys(): 
+        row.append(measurements[key])
+    # row now holds all features values in correct order (see line below)
+    # row=[p1,p2,...,ax1,ax2,...,gx1,...,gy1,...,t]
+    # insert new datapoint in csv
+    with open(csv,'a') as f:
+        writer=csv.writer(f)
+        writer.writerow(row)
+    # reset measurments lists for next datapoint
+    measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[],'t':[]}
+    # <==
