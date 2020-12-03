@@ -129,5 +129,6 @@ while True:
         writer=csv.writer(f)
         writer.writerow(row)
     # reset measurments lists for next datapoint
+    # WARNING THIS VARAIBLE IS DEFINED TWICE (see line 57)
     measurements={'p':[],'ax':[],'ay':[],'az':[],'gx':[],'gy':[],'gz':[],'t':[]}
     # <==
