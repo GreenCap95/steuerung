@@ -225,7 +225,7 @@ void setup()
             // check if its been x sec since last sensor reading
             if (millis()-millis_last_reading>sensor_sampling_rate)
             {
-                // read pressur value
+                // TODO read pressur value
 
                 // update lsm6ds33 events
                 lsm6ds33.getEvent(&accel, &gyro, &temp); 
