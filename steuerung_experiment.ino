@@ -20,6 +20,7 @@ int valve_close_door=7;
 int valve_open_door=8;
 int valve_supply=6;
 int piep=11;
+int pressure_sensor_pin=A0; // A0 is just a variable storing a number
 
 // define sensor objects
 Adafruit_LSM6DS33 lsm6ds33;
@@ -106,6 +107,17 @@ void route_air_open(){
 void route_air_close(){
     digitalWrite(valve_close_door,LOW)
 }
+
+// Functions for sensor readings
+float get_pressure()
+{
+    // get number corresponding to voltage coming from pressur sensor
+    int sensor_value=analogRead(pressure_sensor_pin); // between 0 and 1023
+    // calc pressur in MPa
+    // pressure range is 0..10bar, UNIT USED Pa (1Mpa=10bar)
+    float pressure=sensor_value*(1000000.0/1023.0) 
+    return pressure
+}
 //==============================================================================
 //==============================================================================
 void setup()
@@ -119,6 +131,7 @@ void setup()
     pinMode(valve_open_door, OUTPUT);
     pinMode(valve_supply, OUTPUT);
     pinMode(Piep, OUTPUT);
+    pinMode(pressure_sensor_pin,INPUT);
     digitalWrite(6,HIGH);
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
@@ -286,7 +299,7 @@ void setup()
                 duration_send=true;
             }
             // use variable to not send duration more than once while door
-            // is closed
+            // yis closed
             bool duration_send=true;
         }
         // <==
