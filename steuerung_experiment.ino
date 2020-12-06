@@ -239,7 +239,6 @@ void setup()
             // check if its been x sec since last sensor reading
             if (millis()-millis_last_reading>sensor_sampling_rate)
             {
-                // TODO read pressur value
                 int p=get_pressure();
 
                 // update lsm6ds33 events
