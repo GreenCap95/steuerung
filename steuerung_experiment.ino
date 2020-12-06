@@ -9,7 +9,6 @@
 
 // load libaries
 #include <Adafruit_LSM6DS33.h>
-#include <map>
 
 // assign pin numbers
 int button_close=2;
@@ -26,9 +25,9 @@ int pressure_sensor_pin=A0; // A0 is just a variable storing a number
 Adafruit_LSM6DS33 lsm6ds33;
 
 // define process variables
-int TIMEFRAME=30 // timeframe in s in which to make evenly spaced measurments
-int STEP=0.2 // sec between two measurments. TIMEFRAME must be dividabl by STEP
-int values_count=TIMEFRAME/STEP // amount of measurments per timeframe
+int TIMEFRAME=30; // timeframe in s in which to make evenly spaced measurments
+int STEP=0.2; // sec between two measurments. TIMEFRAME must be dividabl by STEP
+int values_count=TIMEFRAME/STEP; // amount of measurments per timeframe
 bool button_close_pressed=false;
 bool button_open_pressed=false;
 bool door_is_closing=false;
@@ -50,14 +49,6 @@ int sensor_sampling_rate=200; // sensor values are read every x ms
 int cycles_to_perform=2;
 int cycle_counter=0;
 
-// define containers for sensor values
-list<float> cycle_accel_x;
-list<float> cycle_accel_y;
-list<float> cycle_accel_z;
-list<float> cycle_gyro_x;
-list<float> cycle_gyro_y;
-list<float> cycle_gyro_z;
-list<float> cycle_presure;
 
 // Funcitons to controll door movement
 void open_door(){
@@ -72,26 +63,8 @@ void close_door(){
     door_is_closing=true;
 }
 
-void send_sensor_values(map lsm6ds33_values){
-    Serial.println(pressure_values);
-    Serial.println(lsm6ds33_values[""]);
-    Serial.println(acce_y);
-    Serial.println(acce_z);
-    Serial.println(gyro_x);
-    Serial.println(gyro_y);
-    Serial.println(gyro_z);
-    return;
-}
 
 
-// Function for serial communication
-void ready()
-{
-    // Arduino signal Pi that is it ready for serial communication
-    Serial.println("ok");
-    // wait for response
-    while
-}
 
 // Functions to controll valves
 void open_supply_valve(){
@@ -107,7 +80,7 @@ void route_air_open(){
 }
 
 void route_air_close(){
-    digitalWrite(valve_close_door,LOW)
+    digitalWrite(valve_close_door,LOW);
 }
 
 // Functions for sensor readings
@@ -117,8 +90,8 @@ float get_pressure()
     int sensor_value=analogRead(pressure_sensor_pin); // between 0 and 1023
     // calc pressur in MPa
     // pressure range is 0..10bar, UNIT USED Pa (1Mpa=10bar)
-    float pressure=sensor_value*(1000000.0/1023.0) 
-    return pressure
+    float pressure=sensor_value*(1000000.0/1023.0);
+    return pressure;
 }
 //==============================================================================
 //==============================================================================
@@ -134,23 +107,24 @@ void setup()
     pinMode(valve_close_door, OUTPUT);
     pinMode(valve_open_door, OUTPUT);
     pinMode(valve_supply, OUTPUT);
-    pinMode(Piep, OUTPUT);
+    pinMode(piep, OUTPUT);
     pinMode(pressure_sensor_pin,INPUT);
     digitalWrite(6,HIGH);
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
     
-
+    float p;
 
     sensors_event_t accel;
     sensors_event_t gyro;
-    senosrs_event_t temp;
+    sensors_event_t temp;
 
     // ==> start first cycle
     // door is still closed yet
     open_door();
     millis_cycle_start=millis();
     millis_last_reading=millis();
+    bool duration_send=false;
     // <==
 
     // *****main loop*****
@@ -183,7 +157,7 @@ void setup()
         if (door_is_open)
         {
             // check if door has been open for specified time
-            if (millis()-millis_door_opened>timeframe_door_idle)&(millis_door_opened!=0)
+            if ((millis()-millis_door_opened>timeframe_door_idle)&(millis_door_opened!=0))
             {
                 // close door
                 close_door();
@@ -193,7 +167,7 @@ void setup()
             }
             // check if door is open and waiting
             // door is open since 50ms
-            else if (millis()-millis_door_opened>50) & (millis_door_opened!=0)
+            else if ((millis()-millis_door_opened>50) & (millis_door_opened!=0))
             {
                 // wait until door has been open for the wished duration
             }
@@ -207,7 +181,7 @@ void setup()
         if (door_is_closed)
         {
             // check if door has been closed for specified time
-            if (millis()-millis_door_closed>timeframe_door_idle) & (millis_door_closed!=0)
+            if ((millis()-millis_door_closed>timeframe_door_idle) & (millis_door_closed!=0))
             {
                 // start new cycle
                 open_door();
@@ -219,7 +193,7 @@ void setup()
             }
             // check if door is closed and waiting
             // door is closed since 50ms
-            else if (millis()-millis_door_closed>50) & (millis_door_closed!=0)
+            else if ((millis()-millis_door_closed>50) & (millis_door_closed!=0))
             {
                 // wait until door has been closed for the wished duration
             }
@@ -241,7 +215,7 @@ void setup()
             // check if its been x sec since last sensor reading
             if (millis()-millis_last_reading>sensor_sampling_rate)
             {
-                int p=get_pressure();
+                p=get_pressure();
 
                 // update lsm6ds33 events
                 lsm6ds33.getEvent(&accel, &gyro, &temp); 
