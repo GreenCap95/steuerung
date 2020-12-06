@@ -240,6 +240,7 @@ void setup()
             if (millis()-millis_last_reading>sensor_sampling_rate)
             {
                 // TODO read pressur value
+                int p=get_pressure();
 
                 // update lsm6ds33 events
                 lsm6ds33.getEvent(&accel, &gyro, &temp); 
