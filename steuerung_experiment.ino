@@ -124,6 +124,7 @@ float get_pressure()
 //==============================================================================
 void setup()
 {
+    // TODO set higher Baudrate
     Serial.begin(9600);
 
     // setup pinmodes
