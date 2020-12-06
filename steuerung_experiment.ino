@@ -41,6 +41,8 @@ bool new_readings_available=false;
 unsigned long millis_last_reading; // time by then  sensors had been read last
 unsigned long millis_door_opened=0; // time by then door is completly open
 unsigned long millis_door_closed=0; // time by then door is completly closed
+int millis_cycle_start;
+int millis_cycle_end;
 int timeframe_door_idle=2000; // ms door stays opened or closed
 int timeframe_measurement=15000; // timeframe while sensors are read
 int sensor_sampling_rate=200; // sensor values are read every x ms
@@ -122,6 +124,8 @@ float get_pressure()
 //==============================================================================
 void setup()
 {
+    Serial.begin(9600);
+
     // setup pinmodes
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
@@ -136,9 +140,7 @@ void setup()
     digitalWrite(7,HIGH);
     digitalWrite(8,HIGH);
     
-    last_millis=millis();
-    int millis_cycle_start;
-    int millis_cycle_end;
+
 
     sensors_event_t accel;
     sensors_event_t gyro;
