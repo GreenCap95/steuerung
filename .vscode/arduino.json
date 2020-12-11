@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "snippets\\cycles.ino",
+    "programmer": "AVR ISP"
+}

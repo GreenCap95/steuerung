@@ -38,6 +38,8 @@ Do it, test it, repeat.
 import serial
 import csv
 
+def recieve_sensor_values()
+
 # ==> set up variables
 TIMEFRAME=30 # duration of every datapoint, cycle duration must be shorter
 STEP=0.2 # time in s between two sensor measurements
@@ -70,7 +72,7 @@ while True:
 
     # **** Anforderungen ****
     # - sende fortlaufend 2 während nur auf Zyklusdauer gewartet wird
-    # ***********************
+    # ***********************ipyth
 
     # ==> recieve sensor values and store them
     # only signal Arduino that Pi is ready to recieve sensor measurements if values
