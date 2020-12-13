@@ -6,9 +6,9 @@ This code snippet is for testing if the Pi is able to to write several values to
 # old data writen to the csv file will not be overwritten
 
 import csv
-SAMPLES_COUNT=20 # for testing purpose limit samples to write to csv
+SAMPLES_COUNT=60 # for testing purpose limit samples to write to csv
 samples_count=0 # variable to keep track
-feature_values_count=2 # number of features for each mesurement in a cycle
+feature_values_count=5 # number of features for each mesurement in a cycle
 csv_file="data.csv"
 
 
