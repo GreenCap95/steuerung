@@ -103,7 +103,7 @@ void setup()
     pinMode(button_close, INPUT);
     pinMode(button_open, INPUT);
     pinMode(switch_door_open, INPUT);
-    pinMode(switch_door_closed, INPUT);
+    pinMode(switch_door_closed, INPUT); 
     pinMode(valve_close_door, OUTPUT);
     pinMode(valve_open_door, OUTPUT);
     pinMode(valve_supply, OUTPUT);
