@@ -106,7 +106,7 @@ void setup()
                 door_is_closing=false;
             }
         }
-        // <==
+        // <== check current door status
 
         // ==> control door depending on door status
         if (door_is_open)
