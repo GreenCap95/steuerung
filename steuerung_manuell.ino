@@ -1,5 +1,5 @@
-int TastZu=2;      // Taster_Tuer_Zu
-int TastAuf=3;      // Taster_Tuer_Auf
+int TastZu=2;     // Taster_Tuer_Zu
+int TastAuf=3;    // Taster_Tuer_Auf
 int EndZu=5;      // Endschalter_Tur_Zu
 int EndAuf=4;     // Endschalter_Tur_Auf
 int VenZu=7;      // Ventil_Tuer_Zu

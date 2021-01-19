@@ -4,8 +4,8 @@
 This code snippet is for testing if the controlling of the door works as expected
 */
 
-int switch_door_open=4;
-int switch_door_closed=5;
+int switch_door_open=5;
+int switch_door_closed=4;
 int valve_supply=6;
 int valve_close_door=7;
 int valve_open_door=8;

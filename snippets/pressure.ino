@@ -8,7 +8,7 @@ int pressure_sensor_pin=4;
 
 float read_pressure()
 {
-    // get value from sensor mapping volt (0..1023 -> 0..5V)
+    // get value from sensor mapping volt (0..5V -> 0..1023)
     int value=analogRead(pressure_sensor_pin);
     float pressure_Pa=value*(10/1024)*100000;
     return pressure_Pa;
@@ -21,7 +21,7 @@ void setup()
 void loop()
 {
      // ==> setup serial connection
-    Serial.begin(115200);
+    Serial.begin(9600);
     while (!Serial)
     {
         delay(10); // will pause Uno, etc until serial console opens
