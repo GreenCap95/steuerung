@@ -102,6 +102,7 @@ void setup()
     while (cycle_counter<cycles_to_perform){
         // ==> start first cycle
         // door is still closed yet
+        Serial.println("Start new cycle. open door.");
         open_door();
         door_is_opening=true;
         millis_cycle_start=millis();
@@ -122,12 +123,14 @@ void setup()
             // after it's been opened/closed
             if ((millis()-millis_when_door_opened>MILLIS_COUNT_DOOR_IDLE)&(millis_when_door_opened!=0))
             {
+                Serial.println("close door");
                 close_door();
                 door_is_closing=true;
                 millis_when_door_opened=0; 
             }
             if (millis_when_door_closed!=0)
             {
+                Serial.println("waiting");
                 // just wait for timeframe to be completed and read sensors for
                 // the rest of the time
             }
@@ -135,6 +138,7 @@ void setup()
             // take time when door opens or closes
             if ((door_is_open)&(door_is_opening))
             {
+                Serial.println("Door is open");
                 //.. door just opened
                 millis_when_door_opened=millis();
                 reset_valves();
@@ -142,6 +146,7 @@ void setup()
             }
             if ((door_is_closed)&(door_is_closing))
             {
+                Serial.println("Door is closed");
                 //.. door just closed
                 millis_when_door_closed=millis();
                 reset_valves();
