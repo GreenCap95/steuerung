@@ -1,42 +1,38 @@
-/*
-======ALL SNIPPETS ARE MINIMAL CODES PERFORMING A CERTAIN FUNCTIONALITY=========
-
-This code snippet is for testing if the controlling of the door works as expected
-*/
-
 int switch_door_open=5;
 int switch_door_closed=4;
 int valve_supply=6;
 int valve_close_door=7;
 int valve_open_door=8;
+int button_open=3;
 
 bool door_is_closing=false;
 bool door_is_opening=false;
 bool door_is_open=false;
 bool door_is_closed=false;
+// bool button_open_pressed=false;
+bool start=false;
+String input_serial;
 
-int TIMEFRAME=30;   // sec; new cycle should not start before this time
+int TIMEFRAME=15000;   // sec; new cycle should not start before this time
                     // frame has passed, thus ensuring each cycle has the same
                     // amount of samples features measured
-unsigned long millis_when_door_opened=0; // time by then door is completly open
-unsigned long millis_when_door_closed=0; // time by then door is completly closed
-int millis_count_door_idle=2000;       // ms door stays opened or 
-int millis_cycle_start;
+unsigned long millis_when_door_opened=0; // time by when door is completly open
+unsigned long millis_when_door_closed=0; // time by when door is completly closed
+int MILLIS_COUNT_DOOR_IDLE = 2000;       // ms door stays opened or
+unsigned long millis_cycle_start;
 
-int cycles_to_perform=2;
+int cycles_to_perform = 3;
 int cycle_counter=0;
 
 // ==> Funcitons to controll door movement
 void open_door(){
-    open_supply_valve();
     route_air_open();
-    door_is_opening=true;
+    open_supply_valve();
 }
 
 void close_door(){
-    open_supply_valve();
     route_air_close();
-    door_is_closing=true;
+    open_supply_valve();
 }
 // <==
 
@@ -50,17 +46,20 @@ void close_supply_valve(){
 }
 
 void route_air_open(){
-    // deactivate magnet pulling valve in "close door" position
-    digitalWrite(valve_close_door,HIGH);
     // pull valve in "open door" position
     digitalWrite(valve_open_door,LOW);
 }
 
 void route_air_close(){
-    // deactivate magnet pulling valve in "open door" position
-    digitalWrite(valve_open_door,HIGH);
     // pull valve in "close door" position
     digitalWrite(valve_close_door,LOW);
+}
+
+void reset_valves(){
+    close_supply_valve();
+    // deactivate both magnets
+    digitalWrite(valve_open_door,HIGH);
+    digitalWrite(valve_close_door,HIGH);
 }
 // <==
 
@@ -72,100 +71,96 @@ void setup()
     pinMode(valve_close_door, OUTPUT);
     pinMode(valve_open_door, OUTPUT);
     pinMode(valve_supply, OUTPUT);
+    pinMode(button_open,INPUT);
+
+    // setup serial connection
+    Serial.begin(57600);
 
     // make sure supply valve is shut at first
-    close_supply_valve();    
+    Serial.println("reset valves");
+    reset_valves();
 
-    // ==> start first cycle
-    // door is still closed yet
-    open_door();
-    millis_cycle_start=millis();
-    // <==
-
-    // *****main loop*****
-    while (cycle_counter<cycles_to_perform)
+    // wait to start until button "open" is pressed
+    Serial.println("Input 'start' to start");
+    while (!start)
     {
-        // ==> check current door status
-        // door can only be open, if it was opening before
-        if (door_is_opening)
+        if (Serial.available())
         {
-            // check if door is open yet
-            door_is_open=(digitalRead(switch_door_open)==HIGH);
-            if (door_is_open)
+            input_serial=Serial.readStringUntil('\n');
+            if (input_serial.equals("start"))
             {
-                // door is not opening any longer
-                door_is_opening=false;
+                start=true;
             }
         }
-        if (door_is_closing)
+    }
+    Serial.println("START");
+    
+   
+
+    // *****main loop*****
+    // loop until the last cycle has ended (aka door closed)
+    while (cycle_counter<cycles_to_perform){
+        // ==> start first cycle
+        // door is still closed yet
+        Serial.println("*****Start new cycle******");
+        Serial.println("open door");
+        open_door();
+        door_is_opening=true;
+        millis_cycle_start=millis();
+        // <==
+
+        // loop for excatly x seconds for each cycle so the number of datapoints
+        // collectet is the same for all cycles
+        while ((millis()-millis_cycle_start)<TIMEFRAME)
         {
-            // check if door is closed yet
+            // read sensor values here, but not yet!
+
+            // update door status
+            // just one or none can be true at the same time
+            door_is_open=(digitalRead(switch_door_open)==HIGH);
             door_is_closed=(digitalRead(switch_door_closed)==HIGH);
-            if (door_is_closed)
+
+            // trigger new movement if the door has been given time to settle
+            // after it's been opened/closed
+            if ((millis()-millis_when_door_opened>MILLIS_COUNT_DOOR_IDLE)&(millis_when_door_opened!=0))
             {
+                Serial.println("close door");
+                close_door();
+                door_is_closing=true;
+                millis_when_door_opened=0; 
+            }
+
+            // take time when door opens or closes
+            if ((door_is_open)&(door_is_opening))
+            {
+                Serial.println("Door is open");
+                //.. door just opened
+                millis_when_door_opened=millis();
+                reset_valves();
+                door_is_opening=false;
+            }
+            if ((door_is_closed)&(door_is_closing))
+            {
+                Serial.println("Door is closed");
+                //.. door just closed
+                millis_when_door_closed=millis();
+                reset_valves();
+                
                 door_is_closing=false;
             }
         }
-        // <== check current door status
-
-        // ==> control door depending on door status
-        if (door_is_open)
-        {
-            // check if door has been open for specified time
-            if ((millis()-millis_when_door_opened>millis_count_door_idle)&(millis_when_door_opened!=0))
-            {
-                // close door
-                close_door();
-                door_is_open=false;
-                // reset open door time tracker
-                millis_when_door_opened=0;
-            }
-            // check if door is open and waiting
-            // door is open since 50ms
-            else if ((millis()-millis_when_door_opened>50) & (millis_when_door_opened!=0))
-            {
-                // wait until door has been open for the wished duration
-            }
-            else // door has just been opened (not even 50ms ago)
-            {
-                close_supply_valve();
-                // log time when door has been opened
-                millis_when_door_opened=millis();
-            }
-        }
-        if (door_is_closed)
-        {
-            // check if door has been closed for specified time
-            if ((millis()-millis_when_door_closed>millis_count_door_idle) & (millis_when_door_closed!=0))
-            {
-                // start new cycle
-                open_door();
-                door_is_closed=false;
-                // reset variables for new cycle
-                millis_when_door_closed=0;
-                millis_cycle_start=millis(); // track beginning time of cycle
-            }
-            // check if door is closed and waiting
-            // door is closed since 50ms
-            else if ((millis()-millis_when_door_closed>50) & (millis_when_door_closed!=0))
-            {
-                // wait until door has been closed for the wished duration
-            }
-            else // door has just been closed (just 50ms ago)
-            {
-                close_supply_valve();
-                // log time when door  has been closed
-                millis_when_door_closed=millis();
-            }
-        // <==
-        }
+        cycle_counter++;
+        Serial.print("Cycle finished: #");
+        Serial.println(cycle_counter);
+        Serial.print("Cycle duration: ");
+        Serial.println(millis()-millis_cycle_start);
     }
+Serial.println("end of main loop");
 }
-
 void loop()
 {
     // this loop does nothing except holding the arduino idle after the
     // experiment is completed. In order to rerun the experiment
     // the arduino needs to be reset.
     delay(1000);
-}
+} 
