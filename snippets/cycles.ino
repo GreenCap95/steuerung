@@ -13,13 +13,13 @@ bool door_is_closed=false;
 bool start=false;
 String input_serial;
 
-int TIMEFRAME=10000;   // sec; new cycle should not start before this time
+int TIMEFRAME=15000;   // sec; new cycle should not start before this time
                     // frame has passed, thus ensuring each cycle has the same
                     // amount of samples features measured
 unsigned long millis_when_door_opened=0; // time by when door is completly open
 unsigned long millis_when_door_closed=0; // time by when door is completly closed
 int MILLIS_COUNT_DOOR_IDLE = 2000;       // ms door stays opened or
-int millis_cycle_start;
+unsigned long millis_cycle_start;
 
 int cycles_to_perform = 3;
 int cycle_counter=0;
@@ -102,7 +102,8 @@ void setup()
     while (cycle_counter<cycles_to_perform){
         // ==> start first cycle
         // door is still closed yet
-        Serial.println("Start new cycle. open door.");
+        Serial.println("*****Start new cycle******");
+        Serial.println("open door");
         open_door();
         door_is_opening=true;
         millis_cycle_start=millis();
@@ -110,7 +111,7 @@ void setup()
 
         // loop for excatly x seconds for each cycle so the number of datapoints
         // collectet is the same for all cycles
-        while (millis()-millis_cycle_start<TIMEFRAME)
+        while ((millis()-millis_cycle_start)<TIMEFRAME)
         {
             // read sensor values here, but not yet!
 
@@ -148,8 +149,11 @@ void setup()
                 door_is_closing=false;
             }
         }
-        Serial.println("Increment counter");
         cycle_counter++;
+        Serial.print("Cycle finished: #");
+        Serial.println(cycle_counter);
+        Serial.print("Cycle duration: ");
+        Serial.println(millis()-millis_cycle_start);
     }
 Serial.println("end of main loop");
 }
