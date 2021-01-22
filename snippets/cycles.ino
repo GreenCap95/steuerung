@@ -128,12 +128,6 @@ void setup()
                 door_is_closing=true;
                 millis_when_door_opened=0; 
             }
-            if (millis_when_door_closed!=0)
-            {
-                Serial.println("waiting");
-                // just wait for timeframe to be completed and read sensors for
-                // the rest of the time
-            }
 
             // take time when door opens or closes
             if ((door_is_open)&(door_is_opening))
