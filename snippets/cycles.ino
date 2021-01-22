@@ -9,7 +9,9 @@ bool door_is_closing=false;
 bool door_is_opening=false;
 bool door_is_open=false;
 bool door_is_closed=false;
-bool button_open_pressed=false;
+// bool button_open_pressed=false;
+bool start=false;
+String input_serial;
 
 int TIMEFRAME=10;   // sec; new cycle should not start before this time
                     // frame has passed, thus ensuring each cycle has the same
@@ -79,10 +81,17 @@ void setup()
     reset_valves();
 
     // wait to start until button "open" is pressed
-    Serial.println("Press AUF to start");
-    while (!button_open_pressed)
+    Serial.println("Input 'start' to start");
+    while (!start)
     {
-        button_open_pressed=(digitalRead(button_open)==HIGH);
+        if (Serial.available())
+        {
+            input_serial=Serial.readStringUntil('\n');
+            if (input_serial.equals("start")
+            {
+                start=true;
+            }
+        }
     }
     Serial.println("START");
     
