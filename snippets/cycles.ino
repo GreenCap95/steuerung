@@ -13,7 +13,7 @@ bool door_is_closed=false;
 bool start=false;
 String input_serial;
 
-int TIMEFRAME=10;   // sec; new cycle should not start before this time
+int TIMEFRAME=10000;   // sec; new cycle should not start before this time
                     // frame has passed, thus ensuring each cycle has the same
                     // amount of samples features measured
 unsigned long millis_when_door_opened=0; // time by when door is completly open
@@ -87,7 +87,7 @@ void setup()
         if (Serial.available())
         {
             input_serial=Serial.readStringUntil('\n');
-            if (input_serial.equals("start")
+            if (input_serial.equals("start"))
             {
                 start=true;
             }
